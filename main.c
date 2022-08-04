@@ -32,7 +32,7 @@ typedef struct info_s
 	//(contenente la lista di possibili caratteri che si possono trovare in quella posizione, organizzato come un array di bool.
 	// NB: se un carattere è fissato in una posizione (giusto al posto giusto), sarà presente solo lui,
 	// se invece un carattere in quella posizione è risultato "giusto al posto sbagliato", sicuramente non sarà presente in quella posizione)
-	_Bool *position[ALPH_LEN];
+	_Bool (*isPositionOfCharacterValid)[ALPH_LEN];
 
 	// indica se c'è bisogno di aggiornare il valido dei nodi
 	_Bool toUpdate;
@@ -182,6 +182,7 @@ void updateOccurrences(info_t *info, int *counters)
 void removeCharacterAtPosition(info_t *info, char c, int position)
 {
 	printf("\n removing: %c at position %d", c, position);
+	info->isPositionOfCharacterValid[position][characterToIndex(c)] = 0;
 }
 void removeAllCharactersAtPositionExcept(info_t *info, char c, int position)
 {
@@ -370,15 +371,20 @@ void compareWords(info_t *info, tree_t *head, char *word, char *solution, char *
 			result[i] = '+';
 			// segno che è già stata associata
 			isFree[i] = 0;
-			// remove characters at position different from the found character
-			removeAllCharactersAtPositionExcept(info, word[i], i);
+			// metto a zero tutti i caratteri (nessuno è valido tranne quello giusto al posto giusto)
+			for (j = 0; j < ALPH_LEN; j++)
+			{
+				info->isPositionOfCharacterValid[i][j] = 0;
+			}
+			// metto ad 1 quello giusto al posto giusto
+			info->isPositionOfCharacterValid[i][characterToIndex(word[i])] = 1;
 			// conto la lettera
 			characterCounters[characterToIndex(word[i])]++;
 		}
 		else
 		{
-			// remove characters which did not mach at position
-			removeCharacterAtPosition(info, word[i], i);
+			// i caratteri che non sono risultati giusti al posto giusto li rimuovo
+			info->isPositionOfCharacterValid[i][characterToIndex(word[i])] = 0;
 		}
 	}
 	for (i = 0; i < length; i++)
@@ -402,6 +408,15 @@ void compareWords(info_t *info, tree_t *head, char *word, char *solution, char *
 		}
 	}
 	updateOccurrences(info, characterCounters);
+	// inizializzo i caratteri che posso trovare alle posizioni
+	for (i = 0; i < length; i++)
+	{
+		for (j = 0; j < ALPH_LEN; j++)
+			printf("-%d-", info->isPositionOfCharacterValid[i][j]);
+		printf("\n");
+	}
+	printf("\n");
+
 	printf("%.*s\n", length, result);
 	return;
 }
@@ -426,6 +441,10 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 		{
 			character = getc(stdin);
 		} while (character == EOS || character == EOL || character == EOW);
+		// inizializzo i caratteri che posso trovare alle posizioni
+		for (i = 0; i < length; i++)
+			for (j = 0; j < ALPH_LEN; j++)
+				info->isPositionOfCharacterValid[i][j] = 1;
 		// inizializzo il numero di caratteri trovati
 		for (i = 0; i < ALPH_LEN; i++)
 			info->discoveredOccurrences[i] = 0;
@@ -522,6 +541,8 @@ int main(int argc, char *argv[])
 	// creo dizionario vuoto
 	dictionary = addNode(dictionary, '\0', (wordLength - 1), NULL);
 
+	// creo vettore di vettori statici
+	infoVar.isPositionOfCharacterValid = malloc(sizeof(_Bool) * wordLength * ALPH_LEN);
 	// creating array where to put word
 	word = (char *)malloc(sizeof(char) * wordLength);
 	// creo vettore dove mettere la soluione
@@ -531,7 +552,7 @@ int main(int argc, char *argv[])
 	// creating array where to put check for pairing
 	isFree = (_Bool *)malloc(sizeof(_Bool) * wordLength);
 
-	if (word && solution && result && isFree)
+	if (word && solution && result && isFree && infoVar.isPositionOfCharacterValid)
 	{
 		// aggiungo per la prima volta parole al dizionario
 		dictionary = addWords(dictionary, word, wordLength);
@@ -581,4 +602,3 @@ int main(int argc, char *argv[])
 }
 
 // si può fare probabilemnte a meno del campo parent e depth, per ora li lascio
-// da iniziare a fare la parte del confronto
