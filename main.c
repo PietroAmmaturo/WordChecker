@@ -25,6 +25,8 @@ long long int cut_branch = 0;
 long long int reset_filtered = 0;
 long long int lower_counters = 0;
 long long int update_occurrences = 0;
+long long int start_match = 0;
+
 // tipi
 //  struttura dati contenente le informazioni relative ai vari inserimanti
 typedef struct info_s
@@ -122,11 +124,10 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 // 0 1 2 3 4 5 6 7 8 9 101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263
 int characterToIndex(char c)
 {
-	character_to_index++;
-	// 10-36
+	// 11-36
 	if (c <= 'Z' && c >= 'A')
 	{
-		return c - 'A' + 10;
+		return c - 'A' + 11;
 	}
 	// 38-64
 	else if (c >= 'a' && c <= 'z')
@@ -144,17 +145,10 @@ int characterToIndex(char c)
 		return 0;
 	}
 	// 37
-	else if (c == '_')
-	{
-		return 37;
-	}
-
-	printf("error");
-	return -1;
+	return 37;
 }
 _Bool findWord(tree_t *head, char *word, int length)
 {
-	find_word++;
 	int i;
 	tree_t *treeCursor;
 	list_t *rightChild;
@@ -169,6 +163,7 @@ _Bool findWord(tree_t *head, char *word, int length)
 	// scorro la parola inserita
 	for (i = 0; i < length; i++)
 	{
+		find_word += 1;
 		// trovo il figlio, devo pure aggiornare l'head nel caso cambi
 		rightChild = findChild(treeCursor->child, word[i], treeCursor);
 		// se lo trovo proseguo la scansione
@@ -181,46 +176,12 @@ _Bool findWord(tree_t *head, char *word, int length)
 	}
 	return 1;
 }
-//////////////
-//	info	//
-//////////////
-void updateOccurrences(info_t *info, int *counters)
-{
-	// printf("\n----updating occurrences----\n");
-	update_occurrences++;
-	for (int i = 0; i < ALPH_LEN; i++)
-	{
-		// se non ho già stabilito il numero definitivo di occorrenze per questa lettera
-		if (!(info->isDefinitive[i]))
-		{
-			/*
-			// se ho contato più occorrenze di quelle massime, mi sarò di sicuro accorto del numero esatto di occorrenze
-			if (counters[i] > info->trueOccurrences[i])
-			{
-				printf("/n%d is definitively %d/n", i, counters[i]);
-				info->discoveredOccurrences[i] = info->trueOccurrences[i];
-				info->isDefinitive[i] = 1;
-			} // se ho contato più occorrenze del precedente valore minimo, allora ho trovato un valore minimo di occorrenze più alto (maggior precisione)
-			else */
-
-			// non c'è pericolo di contare più occorrenze di quelle massime
-			// ogni volta controllo se è stata associata la lettera
-			if (counters[i] > info->discoveredOccurrences[i])
-			{
-				info->discoveredOccurrences[i] = counters[i];
-			}
-		}
-		// printf("-%d-", info->discoveredOccurrences[i]);
-	}
-	// printf("\n");
-}
 
 //////////////
 //	alberi	//
 //////////////
 tree_t *addNode(tree_t *h, char c, int d, tree_t *p)
 {
-	add_node++;
 	// adding node
 	h = (tree_t *)malloc(sizeof(tree_t));
 	if (h)
@@ -259,7 +220,6 @@ tree_t *addWord(tree_t *head, char *word, int length)
 }
 tree_t *addWords(tree_t *head, char *word, int length)
 {
-	add_words++;
 	// printf("\n----inizio inserimento----\n");
 	int i, j;
 	char character;
@@ -308,7 +268,6 @@ void deleteBranch(tree_t *h)
 // rende non valido l'elemento che gli viene passato e tutti i suoi figli
 void unValidBranch(tree_t *h)
 {
-	un_valid_branch++;
 	if (h->valid)
 	{
 		list_t *listCursor;
@@ -316,7 +275,9 @@ void unValidBranch(tree_t *h)
 
 		// All the children
 		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+		{
 			unValidBranch(listCursor->node);
+		}
 
 		h->valid = 0;
 	}
@@ -324,7 +285,6 @@ void unValidBranch(tree_t *h)
 // rende valido l'elemento che gli viene passato e tutti i suoi figli
 void validBranch(tree_t *h)
 {
-	valid_branch++;
 	list_t *listCursor;
 
 	// All the children
@@ -337,12 +297,12 @@ void validBranch(tree_t *h)
 // rende non filtrato l'elemento che gli viene passato e tutti i suoi figli
 void resetFiltered(tree_t *h)
 {
-	reset_filtered++;
 	list_t *listCursor;
 
 	// All the children
 	for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
-		resetFiltered(listCursor->node);
+		if (listCursor->node->filtered)
+			resetFiltered(listCursor->node);
 
 	h->filtered = 0;
 }
@@ -368,10 +328,9 @@ tree_t *findRootOfDeadBranch(tree_t *h)
 	// printf("radice: %c", h->character);
 	return h;
 }
-// trova e ritorna l'indirizzo del genitore a profondità più bassa avente solo un figlio
+// rende non valida la parte di ramo dal nodo dato fino all'ultimo nodo che non ha fratelli validi
 tree_t *cutBranch(tree_t *h)
 {
-	cut_branch++;
 	list_t *listCursor;
 	listCursor = NULL;
 	// rendo non valido il nodo in cui sono
@@ -398,7 +357,6 @@ tree_t *cutBranch(tree_t *h)
 // trova e ritorna l'indirizzo del genitore a profondità più bassa avente solo un figlio
 void lowerCounters(tree_t *h, int *counter)
 {
-	lower_counters++;
 	list_t *listCursor;
 	listCursor = NULL;
 	// scorri mentre il padre è la radice oppure il listcursor è null (il padre non ha figli validi)
@@ -476,7 +434,6 @@ list_t *addChildBetween(list_t *last, list_t *next, char c, int d, tree_t *p)
 // trova e ritorna l'indirizzo del figlio se c'è, altrimenti ritorna null
 list_t *findChild(list_t *h, char c, tree_t *p)
 {
-	find_child++;
 	list_t *cursor;
 	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
 	for (cursor = h; cursor != NULL && cursor->node->character < c; cursor = cursor->nextSibiling)
@@ -489,41 +446,40 @@ list_t *findChild(list_t *h, char c, tree_t *p)
 	// in ogni caso ritorno cursor
 	return cursor;
 }
-
-//////////////
-//	I/O	//
-//////////////
+////////////////////
+//	CLOSE TO I/O  //
+////////////////////
 void filterDictionary(info_t *info, tree_t *h, int *counter)
 {
-	filter_dictionary++;
 	list_t *listCursor;
-	int i, found;
+	int i, found, characterIndex;
+
 	// controllo di non essere nell'head
 	if (h->character != EOS)
 	{
+		characterIndex = characterToIndex(h->character);
 		h->filtered = 1;
 		// inizializzo found che mi serve per stabilire se una lettera ha un numero totale di occorrenze troppo piccolo
 		found = 0;
 		// conto i caratteri
-		// printf("\nincremento: %c\n", h->character);
-		counter[characterToIndex(h->character)]++;
+		counter[characterIndex]++;
 		// se il carattere non si può trovare a quella posizione (profondità)
 		// printf("\nchecking position of: %c at: %d, result: %d\n", h->character, h->depth, info->isPositionOfCharacterValid[h->depth][characterToIndex(h->character)]);
-		if (!(info->isPositionOfCharacterValid[h->depth][characterToIndex(h->character)]))
+		if (!(info->isPositionOfCharacterValid[h->depth][characterIndex]))
 		{
 			// printf("\nwrong position of: %c at: %d\n", h->character, h->depth);
-			//   rendo non valido il branch dalla radice morta in giu e decremento i contatori
-			// unValidBranch(findRootOfDeadBranch(h));
+			//    rendo non valido il branch dalla radice morta in giu e decremento i contatori
+			//  unValidBranch(findRootOfDeadBranch(h));
 			cutBranch(h);
 			lowerCounters(h, counter);
 			return;
 		}
 		// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
-		else if (counter[characterToIndex(h->character)] > info->discoveredOccurrences[characterToIndex(h->character)] && info->isDefinitive[characterToIndex(h->character)])
+		else if (counter[characterIndex] > info->discoveredOccurrences[characterIndex] && info->isDefinitive[characterIndex])
 		{
 			// printf("\nto many of: %c\n", h->character);
-			//  rendo non valido il branch dalla radice morta in su e decremento i contatori
-			// unValidBranch(findRootOfDeadBranch(h));
+			//   rendo non valido il branch dalla radice morta in su e decremento i contatori
+			//  unValidBranch(findRootOfDeadBranch(h));
 			cutBranch(h);
 			lowerCounters(h, counter);
 			return;
@@ -556,6 +512,22 @@ void filterDictionary(info_t *info, tree_t *h, int *counter)
 		if (listCursor->node->valid)
 			filterDictionary(info, listCursor->node, counter);
 }
+void countFiltered(tree_t *h, int *result)
+{
+	list_t *listCursor;
+
+	if (h->child == NULL)
+		(*result)++;
+	else
+		// All the children
+		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+			if (listCursor->node->valid)
+				countFiltered(listCursor->node, result);
+}
+
+//////////////
+//	I/O	    //
+//////////////
 void printDictionary(tree_t *h, char *word, int length)
 {
 	list_t *listCursor;
@@ -574,35 +546,13 @@ void printDictionary(tree_t *h, char *word, int length)
 			if (listCursor->node->valid)
 				printDictionary(listCursor->node, word, length);
 }
-void countFiltered(tree_t *h, int *result)
-{
-	list_t *listCursor;
-
-	if (h->child == NULL)
-		(*result)++;
-	else
-		// All the children
-		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
-			if (listCursor->node->valid)
-				countFiltered(listCursor->node, result);
-}
 void compareWords(info_t *info, char *word, char *solution, char *result, _Bool *isFree, int length, int *counter)
 {
-	int i, j, found, definitive;
-	/*
-	printf("\ncomparing:");
-	printf("%.*s\n", length, word);
-	printf("%.*s\n", length, solution);
-*/
+	int i, j, found, definitive, characterIndex;
+
 	for (i = 0; i < length; i++)
 	{
-		// nessuna è associata
-		isFree[i] = 1;
-		// nessuna è stata trovata
-		result[i] = '/';
-	}
-	for (i = 0; i < length; i++)
-	{
+		characterIndex = characterToIndex(word[i]);
 		if (word[i] == solution[i])
 		{
 			// giusta al posto giusto
@@ -615,18 +565,23 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 				info->isPositionOfCharacterValid[i][j] = 0;
 			}
 			// metto ad 1 quello giusto al posto giusto
-			info->isPositionOfCharacterValid[i][characterToIndex(word[i])] = 1;
+			info->isPositionOfCharacterValid[i][characterIndex] = 1;
 			// conto la lettera
-			counter[characterToIndex(word[i])]++;
+			counter[characterIndex]++;
 		}
 		else
 		{
+			// per ora non è stata trovata
+			result[i] = '/';
+			// non è associata
+			isFree[i] = 1;
 			// i caratteri che non sono risultati giusti al posto giusto li rimuovo
-			info->isPositionOfCharacterValid[i][characterToIndex(word[i])] = 0;
+			info->isPositionOfCharacterValid[i][characterIndex] = 0;
 		}
 	}
 	for (i = 0; i < length; i++)
 	{
+		characterIndex = characterToIndex(word[i]);
 		definitive = 0;
 		found = 0;
 		for (j = 0; j < length && !found; j++)
@@ -643,7 +598,7 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 					// giusta al posto sbagliato
 					result[i] = '|';
 					// conto le lettere
-					counter[characterToIndex(word[i])]++;
+					counter[characterIndex]++;
 					// segno che è già stata associata
 					isFree[j] = 0;
 					// se prima pensavo fosse definitiva ho scoperto che non lo è
@@ -658,8 +613,8 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 		}
 		if (definitive)
 		{
-			info->discoveredOccurrences[characterToIndex(word[i])] = info->trueOccurrences[characterToIndex(word[i])];
-			info->isDefinitive[characterToIndex(word[i])] = 1;
+			info->discoveredOccurrences[characterIndex] = info->trueOccurrences[characterIndex];
+			info->isDefinitive[characterIndex] = 1;
 		}
 		// controllo se viene trovata
 		found = 0;
@@ -677,23 +632,36 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 		{
 			for (j = 0; j < length; j++)
 			{
-				info->isPositionOfCharacterValid[j][characterToIndex(word[i])] = 0;
+				info->isPositionOfCharacterValid[j][characterIndex] = 0;
 			}
 		}
 	}
-	updateOccurrences(info, counter);
-	// inizializzo i caratteri che posso trovare alle posizioni
-	/*sfor (i = 0; i < length; i++)
+	// aggiorno le occorrenze che non sono già definitive
+	for (int i = 0; i < ALPH_LEN; i++)
 	{
-		for (j = 0; j < ALPH_LEN; j++)
-			printf("-%d-", info->isPositionOfCharacterValid[i][j]);
-		printf("\n");
+		// se non ho già stabilito il numero definitivo di occorrenze per questa lettera
+		if (!(info->isDefinitive[i]))
+		{
+			// non c'è pericolo di contare più occorrenze di quelle massime
+			// ogni volta controllo se è stata associata la lettera
+			if (counter[i] > info->discoveredOccurrences[i])
+			{
+				info->discoveredOccurrences[i] = counter[i];
+			}
+		}
 	}
-	printf("\n");
-*/
 	// stampa risultato del confronto
 	printf("%.*s\n", length, result);
+
+	// mostro caratteri che posso trovare alle posizioni
 	/*
+for (i = 0; i < length; i++)
+{
+	for (j = 0; j < ALPH_LEN; j++)
+		printf("-%d-", info->isPositionOfCharacterValid[i][j]);
+	printf("\n");
+}
+printf("\n");
 		printf("\ncounter\n");
 		for (i = 0; i < ALPH_LEN; i++)
 		{
@@ -714,7 +682,8 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 		{
 			printf("%d", info->trueOccurrences[i]);
 		}
-		*/
+		printf("\n");
+	*/
 	return;
 }
 void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *result, _Bool *isFree, int length)
@@ -724,7 +693,6 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 	char command[MAX_COMMAND_LENGTH];
 	int charactersCounter[ALPH_LEN], filteredCounter;
 
-	// printf("\n----inizio partita----\n");
 	//  prendo la soluzione
 	for (i = 0; i < length; i++)
 		solution[i] = getc(stdin);
@@ -733,12 +701,12 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 	// scan per sapere quanti tentativi ho a disposizione in questa partita
 	if (scanf("%d", &attempts))
 		;
-	// printf("%d\n", attempts);
 	//  prendi primo carattere
 	do
 	{
 		character = getc(stdin);
 	} while (character == EOS || character == EOL || character == EOW);
+
 	// inizializzo i caratteri che posso trovare alle posizioni
 	for (i = 0; i < length; i++)
 		for (j = 0; j < ALPH_LEN; j++)
@@ -755,6 +723,7 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 	// inizializzo i definitivi
 	for (i = 0; i < ALPH_LEN; i++)
 		info->isDefinitive[i] = 0;
+
 	// le parole provate sono minori del numero di tentativi
 	i = 0;
 	while (i < attempts)
@@ -855,7 +824,6 @@ int main(int argc, char *argv[])
 	// scan per sapere quanto è lunga la parola
 	if (scanf("%d", &wordLength))
 		;
-
 	// creo dizionario vuoto
 	dictionary = addNode(dictionary, '\0', (wordLength - 1), NULL);
 
@@ -875,21 +843,9 @@ int main(int argc, char *argv[])
 		// aggiungo per la prima volta parole al dizionario
 		dictionary = addWords(dictionary, word, wordLength);
 
-		// sicuramente ho terminato con un comando di inizio partita, non avrebbe senso stampare filtrate o dire di voler aggiungere parole al dizionario
-		// inoltre il carattere '+' con cui inizia il comando nuova_partita è stato mangiato da addWords che lo ha "scambiato" per il '+' di inserisci_fine
-		if (fgets(command, MAX_COMMAND_LENGTH, stdin))
-			;
-		// comando per iniziare una partita
-		if (strcmp(command, "nuova_partita\n") == 0)
-		{
-			startMatch(&infoVar, dictionary, word, solution, result, isFree, wordLength);
-		}
-		// prendi primo carattere (tendenzialmente sarà un '+')
-		do
-		{
-			character = getc(stdin);
-		} while (character == EOS || character == EOL || character == EOW);
-
+		// sicuramente ho terminato con un comando
+		// il carattere '+' con cui inizia il comando nuova_partita è stato mangiato da addWords che lo ha "scambiato" per il '+' di inserisci_fine
+		character = '+';
 		// se non sono in una partita e non sto aggiungendo parole, posso solo ricevere comandi, ma controlliamo ugualmente per sicurezza
 		while (character == '+')
 		{
@@ -909,7 +865,7 @@ int main(int argc, char *argv[])
 				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
 					;
 			}
-			// prendi primo carattere (tendenzialmente sarà un '+')
+			// prendi primo carattere (tendenzialmente sarà un '+'), se non lo è termino l'esecuzione (sarà un \n)
 			character = getc(stdin);
 		}
 	}
@@ -917,39 +873,7 @@ int main(int argc, char *argv[])
 	{
 		printf("memory error");
 	}
-/*
-	printf("add_word %lld\n", add_word);
 
-	printf("character_to_index %lld\n", character_to_index);
-
-	printf("find_child %lld\n", find_child);
-
-	printf("find_word %lld\n", find_word);
-
-	printf("add_node %lld\n", add_node);
-
-	printf("add_child_between %lld\n", add_child_between);
-
-	printf("filter_dictionary %lld\n", filter_dictionary);
-
-	printf("add_words %lld\n", add_words);
-
-	printf("find_child %lld\n", find_child);
-
-	printf("add_words %lld\n", add_words);
-
-	printf("un_valid_branch %lld\n", un_valid_branch);
-
-	printf("valid_branch %lld\n", valid_branch);
-
-	printf("cut_branch %lld\n", cut_branch);
-
-	printf("reset_filtered %lld\n", reset_filtered);
-
-	printf("lower_counters %lld\n", lower_counters);
-
-	printf("update_occurrences %lld\n", update_occurrences);
-*/
 	return 0;
 }
 
