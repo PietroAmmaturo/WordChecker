@@ -33,10 +33,6 @@ typedef struct info_s
 	// NB: se un carattere è fissato in una posizione (giusto al posto giusto), sarà presente solo lui,
 	// se invece un carattere in quella posizione è risultato "giusto al posto sbagliato", sicuramente non sarà presente in quella posizione)
 	_Bool (*isPositionOfCharacterValid)[ALPH_LEN];
-
-	// indica se c'è bisogno di aggiornare il valido dei nodi, probabilmente da rimuovere (non so come verificarlo)
-	_Bool toUpdate;
-
 } info_t;
 
 // come strutturo un nodo dell'albero rappresentante il dizionario
@@ -179,14 +175,19 @@ void updateOccurrences(info_t *info, int *counters)
 		// se non ho già stabilito il numero definitivo di occorrenze per questa lettera
 		if (!(info->isDefinitive[i]))
 		{
+			/*
 			// se ho contato più occorrenze di quelle massime, mi sarò di sicuro accorto del numero esatto di occorrenze
 			if (counters[i] > info->trueOccurrences[i])
 			{
+				printf("/n%d is definitively %d/n", i, counters[i]);
 				info->discoveredOccurrences[i] = info->trueOccurrences[i];
 				info->isDefinitive[i] = 1;
-			}
-			// se ho contato più occorrenze del precedente valore minimo, allora ho trovato un valore minimo di occorrenze più alto (maggior precisione)
-			else if (counters[i] > info->discoveredOccurrences[i])
+			} // se ho contato più occorrenze del precedente valore minimo, allora ho trovato un valore minimo di occorrenze più alto (maggior precisione)
+			else */
+
+			// non c'è pericolo di contare più occorrenze di quelle massime
+			// ogni volta controllo se è stata associata la lettera
+			if (counters[i] > info->discoveredOccurrences[i])
 			{
 				info->discoveredOccurrences[i] = counters[i];
 			}
@@ -472,22 +473,14 @@ void filterDictionary(info_t *info, tree_t *h, int *counter)
 		// quando raggiungo la fine della parola
 		else if (h->child == NULL)
 		{
-
-			/*printf("counter\n");
-			for (i = 0; i < ALPH_LEN && !found; i++)
-			{
-				printf("%d", counter[i]);
-			}
-			printf("\ndiscovered\n");*/
 			for (i = 0; i < ALPH_LEN && !found; i++)
 			{
 				// se il numero di una lettera è minore di un minimo trovato
 				if (counter[i] < info->discoveredOccurrences[i])
 				{
 					found = 1;
-					//printf("\nto few of: %d\n %d instead of %d", i, counter[i], info->discoveredOccurrences[i]);
+					// printf("\nto few of: %d\n %d instead of %d", i, counter[i], info->discoveredOccurrences[i]);
 				}
-				//printf("%d", info->discoveredOccurrences[i]);
 			}
 			if (found)
 				// rendo non valido il branch dalla radice morta in su e decremento i contatori
@@ -532,7 +525,7 @@ void countFiltered(tree_t *h, int *result)
 }
 void compareWords(info_t *info, char *word, char *solution, char *result, _Bool *isFree, int length, int *counter)
 {
-	int i, j, found, associated;
+	int i, j, found, definitive;
 	/*
 	printf("\ncomparing:");
 	printf("%.*s\n", length, word);
@@ -571,18 +564,39 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 	}
 	for (i = 0; i < length; i++)
 	{
-		for (j = 0; j < length; j++)
+		definitive = 0;
+		found = 0;
+		for (j = 0; j < length && !found; j++)
 		{
 			// controllo se esiste una uguale non associata e non fissata (ancora '/' e non '+')
-			if (word[i] == solution[j] && isFree[j] && result[i] == '/')
+			if (word[i] == solution[j] && result[i] != '+')
 			{
-				// giusta al posto sbagliato
-				result[i] = '|';
-				// conto le lettere
-				counter[characterToIndex(word[i])]++;
-				// segno che è già stata associata
-				isFree[j] = 0;
+				// se trovo una non associata
+				if (isFree[j])
+				{
+					// trovata, devo passare alla prossima lettera
+					// anche per non contare le altre
+					found = 1;
+					// giusta al posto sbagliato
+					result[i] = '|';
+					// conto le lettere
+					counter[characterToIndex(word[i])]++;
+					// segno che è già stata associata
+					isFree[j] = 0;
+					// se prima pensavo fosse definitiva ho scoperto che non lo è
+					definitive = 0;
+				}
+				// potrei trovare una da associare dopo, ma se non la trovassi avrei le occorrenze definitive
+				else
+				{
+					definitive = 1;
+				}
 			}
+		}
+		if (definitive)
+		{
+			info->discoveredOccurrences[characterToIndex(word[i])] = info->trueOccurrences[characterToIndex(word[i])];
+			info->isDefinitive[characterToIndex(word[i])] = 1;
 		}
 		// controllo se viene trovata
 		found = 0;
@@ -616,6 +630,28 @@ void compareWords(info_t *info, char *word, char *solution, char *result, _Bool 
 */
 	// stampa risultato del confronto
 	printf("%.*s\n", length, result);
+	/*
+		printf("\ncounter\n");
+		for (i = 0; i < ALPH_LEN; i++)
+		{
+			printf("%d", counter[i]);
+		}
+		printf("\ndiscovered\n");
+		for (i = 0; i < ALPH_LEN; i++)
+		{
+			printf("%d", info->discoveredOccurrences[i]);
+		}
+		printf("\ndefinitive\n");
+		for (i = 0; i < ALPH_LEN; i++)
+		{
+			printf("%d", info->isDefinitive[i]);
+		}
+		printf("\ntrue\n");
+		for (i = 0; i < ALPH_LEN; i++)
+		{
+			printf("%d", info->trueOccurrences[i]);
+		}
+		*/
 	return;
 }
 void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *result, _Bool *isFree, int length)
@@ -632,7 +668,8 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 	// prendo il null
 	character = getc(stdin);
 	// scan per sapere quanti tentativi ho a disposizione in questa partita
-	scanf("%d", &attempts);
+	if (scanf("%d", &attempts))
+		;
 	// printf("%d\n", attempts);
 	//  prendi primo carattere
 	do
@@ -662,7 +699,8 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 		// controllo se ho ricevuto comandi durante una partita
 		if (character == '+')
 		{
-			fgets(command, MAX_COMMAND_LENGTH, stdin);
+			if (fgets(command, MAX_COMMAND_LENGTH, stdin))
+				;
 			// comando per stampare filtrate durante una partita
 			if (strcmp(command, "stampa_filtrate\n") == 0)
 			{
@@ -674,7 +712,8 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 			{
 				head = addWords(head, word, length);
 				// devo "buttare" la parte finale di comando ("inserisci fine")
-				fgets(command, MAX_COMMAND_LENGTH, stdin);
+				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
+					;
 				// filtro il dizionario aggiornando i validi
 				filterDictionary(info, head, charactersCounter);
 			}
@@ -751,7 +790,8 @@ int main(int argc, char *argv[])
 	char command[MAX_COMMAND_LENGTH + 1];
 
 	// scan per sapere quanto è lunga la parola
-	scanf("%d", &wordLength);
+	if (scanf("%d", &wordLength))
+		;
 
 	// creo dizionario vuoto
 	dictionary = addNode(dictionary, '\0', (wordLength - 1), NULL);
@@ -774,7 +814,8 @@ int main(int argc, char *argv[])
 
 		// sicuramente ho terminato con un comando di inizio partita, non avrebbe senso stampare filtrate o dire di voler aggiungere parole al dizionario
 		// inoltre il carattere '+' con cui inizia il comando nuova_partita è stato mangiato da addWords che lo ha "scambiato" per il '+' di inserisci_fine
-		fgets(command, MAX_COMMAND_LENGTH, stdin);
+		if (fgets(command, MAX_COMMAND_LENGTH, stdin))
+			;
 		// comando per iniziare una partita
 		if (strcmp(command, "nuova_partita\n") == 0)
 		{
@@ -789,7 +830,8 @@ int main(int argc, char *argv[])
 		// se non sono in una partita e non sto aggiungendo parole, posso solo ricevere comandi, ma controlliamo ugualmente per sicurezza
 		while (character == '+')
 		{
-			fgets(command, MAX_COMMAND_LENGTH, stdin);
+			if (fgets(command, MAX_COMMAND_LENGTH, stdin))
+				;
 			// printf("\ncomando: %s", command);
 			//  comando per iniziare una partita
 			if (strcmp(command, "nuova_partita\n") == 0)
@@ -801,7 +843,8 @@ int main(int argc, char *argv[])
 			{
 				dictionary = addWords(dictionary, word, wordLength);
 				// devo "buttare" la parte finale di comando ("inserisci fine")
-				fgets(command, MAX_COMMAND_LENGTH, stdin);
+				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
+					;
 			}
 			// prendi primo carattere (tendenzialmente sarà un '+')
 			character = getc(stdin);
