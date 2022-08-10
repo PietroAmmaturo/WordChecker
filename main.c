@@ -41,12 +41,8 @@ typedef struct info_s
 // come strutturo un nodo dell'albero rappresentante il dizionario
 typedef struct tree_s
 {
-	// profondità a cui si trova un nodo
-	short unsigned int depth : 4;
 	// carattere contenuto nel nodo
 	char character;
-	char ggg;
-
 	// se valido (da stampare)
 	_Bool valid;
 	// figli del nodo (una lista dinamica)
@@ -83,11 +79,11 @@ list_t *findChild(list_t *h, char c);
 
 _Bool findWord(tree_t *head, char *word, int length);
 
-tree_t *addNode(tree_t *h, char c, int d);
+tree_t *addNode(tree_t *h, char c);
 
-list_t *addChildBetween(list_t *last, list_t *next, char c, int d);
+list_t *addChildBetween(list_t *last, list_t *next, char c);
 
-list_t *findOrAddChild(list_t *h, char c, int d, list_t **found);
+list_t *findOrAddChild(list_t *h, char c, list_t **found);
 
 tree_t *addWord(tree_t *head, char *word, int length);
 
@@ -167,14 +163,13 @@ _Bool findWord(tree_t *head, char *word, int length)
 //////////////
 //	alberi	//
 //////////////
-tree_t *addNode(tree_t *h, char c, int d)
+tree_t *addNode(tree_t *h, char c)
 {
 	// adding node
 	h = (tree_t *)malloc(sizeof(tree_t));
 	if (h)
 	{
 		h->character = c;
-		h->depth = d;
 		h->valid = 1;
 		h->child = NULL;
 	}
@@ -196,7 +191,7 @@ tree_t *addWord(tree_t *head, char *word, int length)
 	for (i = 0; i < length; i++)
 	{
 		// trovo il figlio o lo aggiungo se non c'è, devo pure aggiornare l'head nel caso cambi
-		treeCursor->child = findOrAddChild(treeCursor->child, word[i], i, &rightChild);
+		treeCursor->child = findOrAddChild(treeCursor->child, word[i], &rightChild);
 		// sposto il cursore nel figlio (che sia stato appena aggiunto o meno è indifferente)
 		treeCursor = rightChild->node;
 	}
@@ -249,7 +244,7 @@ void validBranch(tree_t *h)
 
 // unica funzione che aggiunge il figlio se non c'è
 // oppure ritorna l'indirizzo del figlio se c'è
-list_t *findOrAddChild(list_t *h, char c, int d, list_t **found)
+list_t *findOrAddChild(list_t *h, char c, list_t **found)
 {
 	list_t *cursor, *previous;
 	previous = NULL;
@@ -259,7 +254,7 @@ list_t *findOrAddChild(list_t *h, char c, int d, list_t **found)
 	// se non lo trovo lo aggiungo
 	if (cursor == NULL || cursor->node->character > c)
 	{
-		cursor = addChildBetween(previous, cursor, c, d);
+		cursor = addChildBetween(previous, cursor, c);
 	}
 	// se il precedente è null, ho aggiunto all'inizio della lista cambiando l'head
 	if (previous == NULL)
@@ -272,7 +267,7 @@ list_t *findOrAddChild(list_t *h, char c, int d, list_t **found)
 	return h;
 }
 // aggiunge elemento alla lista tra precedente e prossimo
-list_t *addChildBetween(list_t *last, list_t *next, char c, int d)
+list_t *addChildBetween(list_t *last, list_t *next, char c)
 {
 	list_t *newChild;
 
@@ -281,7 +276,7 @@ list_t *addChildBetween(list_t *last, list_t *next, char c, int d)
 	if (newChild)
 	{
 		newChild->nextSibiling = next;
-		newChild->node = addNode(newChild->node, c, d);
+		newChild->node = addNode(newChild->node, c);
 		// se c'era effettivamente un nodo prima di newChild
 		if (last)
 		{
@@ -413,20 +408,33 @@ void countFiltered(tree_t *h, int *result)
 void printDictionary(tree_t *h, char *word, int length)
 {
 	list_t *listCursor;
+	if (h->character != EOS)
+	{
+		depth++;
+		// posiziona il carattere nella parola contenitore
+		word[depth] = h->character;
 
-	// posiziona il carattere nella parola contenitore
-	word[h->depth] = h->character;
+		// printf("%c, %d\n", h->character, h->valid);
 
-	// printf("%c, %d\n", h->character, h->valid);
-
-	// stampa la parola quando raggiungi la fine
-	if (h->child == NULL)
-		printf("%.*s\n", length, word);
+		// stampa la parola quando raggiungi la fine
+		if (h->child == NULL)
+			printf("%.*s\n", length, word);
+		else
+			// All the children
+			for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+				if (listCursor->node->valid)
+					printDictionary(listCursor->node, word, length);
+		depth--;
+	}
 	else
+	{
+		depth = -1;
+		word[length - 1] = EOS;
 		// All the children
 		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
 			if (listCursor->node->valid)
 				printDictionary(listCursor->node, word, length);
+	}
 }
 void compareWords(info_t *info, char *word, char *solution, char *result, _Bool *isFree, int length, int *counter)
 {
@@ -718,7 +726,7 @@ int main(int argc, char *argv[])
 	if (scanf("%d", &wordLength))
 		;
 	// creo dizionario vuoto
-	dictionary = addNode(dictionary, '\0', (wordLength - 1));
+	dictionary = addNode(dictionary, '\0');
 
 	// creo vettore di vettori statici
 	infoVar.isPositionOfCharacterValid = malloc(sizeof(_Bool) * wordLength * ALPH_LEN);
