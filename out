@@ -1,1098 +1,325 @@
---------------------------------------------------------------------------------
-Profile data file 'callgrind.out.5360' (creator: callgrind-3.16.1)
---------------------------------------------------------------------------------
-I1 cache: 
-D1 cache: 
-LL cache: 
-Timerange: Basic block 0 - 230890
-Trigger: Program termination
-Profiled target:  ./main (PID 5360, part 1)
-Events recorded:  Ir
-Events shown:     Ir
-Event sort order: Ir
-Thresholds:       99
-Include dirs:     
-User annotated:   
-Auto-annotation:  on
-
---------------------------------------------------------------------------------
-Ir               
---------------------------------------------------------------------------------
-985,605 (100.0%)  PROGRAM TOTALS
-
---------------------------------------------------------------------------------
-Ir                file:function
---------------------------------------------------------------------------------
-
-314,643 (31.92%)  < main.c:filterDictionary'2 (2,596x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-167,098 (16.95%)  < main.c:filterDictionary (546x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-167,098 (16.95%)  *  main.c:filterDictionary'2 [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-141,428 (14.35%)  < ./malloc/malloc.c:malloc (943x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-    358 ( 0.04%)  < ./malloc/malloc.c:tcache_init.part.0 (1x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-    149 ( 0.02%)  < ./malloc/malloc.c:malloc'2 (1x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-137,928 (13.99%)  *  ./malloc/malloc.c:_int_malloc [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-128,787 (13.07%)  < main.c:startMatch (62x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 94,505 ( 9.59%)  *  main.c:compareWords [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
- 72,477 ( 7.35%)  < ./malloc/arena.c:ptmalloc_init.part.0 (1x) [/lib/x86_64-linux-gnu/libc-2.31.so]
- 71,550 ( 7.26%)  *  ./elf/dl-addr.c:_dl_addr [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-183,456 (18.61%)  < main.c:addChildBetween (936x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 75,150 ( 7.62%)  < ???:0x0000000004865308 (2x) [???]
-    947 ( 0.10%)  < main.c:main (5x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 43,372 ( 4.40%)  *  ./malloc/malloc.c:malloc [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-684,171 (69.42%)  < main.c:main (5x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 41,866 ( 4.25%)  *  main.c:startMatch [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
- 64,642 ( 6.56%)  < ./stdio-common/printf.c:printf (124x) [/lib/x86_64-linux-gnu/libc-2.31.so]
- 34,347 ( 3.48%)  *  ./stdio-common/vfprintf-internal.c:__vfprintf_internal [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-233,816 (23.72%)  < main.c:addWord (650x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 30,624 ( 3.11%)  *  main.c:findOrAddChild [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
- 34,418 ( 3.49%)  < ./elf/dl-lookup.c:_dl_lookup_symbol_x (100x) [/lib/x86_64-linux-gnu/ld-2.31.so]
- 24,106 ( 2.45%)  *  ./elf/dl-lookup.c:do_lookup_x [/lib/x86_64-linux-gnu/ld-2.31.so]
-
- 19,099 ( 1.94%)  < ./stdio-common/vfprintf-internal.c:__vfprintf_internal (372x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  9,801 ( 0.99%)  < ./libio/ioputs.c:puts (151x) [/lib/x86_64-linux-gnu/libc-2.31.so]
- 21,916 ( 2.22%)  *  ./libio/fileops.c:_IO_file_xsputn@@GLIBC_2.2.5 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
- 40,018 ( 4.06%)  < main.c:addWords (792x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 26,996 ( 2.74%)  < main.c:startMatch (499x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  1,020 ( 0.10%)  < main.c:main (5x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 21,065 ( 2.14%)  *  ./libio/getc.c:getc [/lib/x86_64-linux-gnu/libc-2.31.so]
-
- 48,752 ( 4.95%)  < ./elf/../sysdeps/x86_64/dl-machine.h:_dl_relocate_object (90x)
-  5,698 ( 0.58%)  < ./elf/../elf/dl-runtime.c:_dl_fixup (10x) [/lib/x86_64-linux-gnu/ld-2.31.so]
- 20,032 ( 2.03%)  *  ./elf/dl-lookup.c:_dl_lookup_symbol_x [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-203,192 (20.62%)  < main.c:findOrAddChild (468x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 19,736 ( 2.00%)  *  main.c:addChildBetween [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-108,361 (10.99%)  < ./libio/genops.c:_IO_default_uflow (252x) [/lib/x86_64-linux-gnu/libc-2.31.so]
- 18,150 ( 1.84%)  *  ./libio/fileops.c:_IO_file_underflow@@GLIBC_2.2.5 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
- 17,794 ( 1.81%)  *  ./elf/../sysdeps/x86_64/dl-machine.h:_dl_relocate_object
-
- 16,172 ( 1.64%)  < main.c:startMatch (5x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 16,172 ( 1.64%)  *  main.c:validBranch [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-113,008 (11.47%)  < main.c:printDictionary'2 (682x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 36,038 ( 3.66%)  < main.c:printDictionary (101x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 14,632 ( 1.48%)  *  main.c:printDictionary'2 [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
- 13,213 ( 1.34%)  < main.c:startMatch (462x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 13,213 ( 1.34%)  *  main.c:countFiltered [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-179,849 (18.25%)  < main.c:startMatch (73x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 12,751 ( 1.29%)  *  main.c:filterDictionary [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-244,866 (24.84%)  < main.c:addWords (130x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 11,050 ( 1.12%)  *  main.c:addWord [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-  9,339 ( 0.95%)  *  ./elf/do-rel.h:_dl_relocate_object
-
-  8,796 ( 0.89%)  < main.c:startMatch (74x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  8,796 ( 0.89%)  *  main.c:findWord [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
- 20,615 ( 2.09%)  < main.c:printDictionary'2 (133x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  2,621 ( 0.27%)  < main.c:startMatch (17x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  8,154 ( 0.83%)  *  ./libio/ioputs.c:puts [/lib/x86_64-linux-gnu/libc-2.31.so]
-
- 76,243 ( 7.74%)  < ./stdio-common/vfscanf-internal.c:__vfscanf_internal (6x) [/lib/x86_64-linux-gnu/libc-2.31.so]
- 46,986 ( 4.77%)  < ./libio/getc.c:getc (246x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  7,056 ( 0.72%)  *  ./libio/genops.c:__uflow [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-181,453 (18.41%)  < main.c:startMatch (11x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-111,105 (11.27%)  < main.c:main (1x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  7,011 ( 0.71%)  *  main.c:addWords [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-  8,746 ( 0.89%)  < ./elf/../elf/dl-sysdep.c:_dl_sysdep_start (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  6,836 ( 0.69%)  *  ./elf/dl-tunables.c:__GI___tunables_init [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  6,547 ( 0.66%)  < ./libio/fileops.c:_IO_file_xsputn@@GLIBC_2.2.5 (398x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  6,547 ( 0.66%)  *  ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__mempcpy_avx_unaligned_erms [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  4,971 ( 0.50%)  < ./elf/dl-lookup.c:check_match (116x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  1,192 ( 0.12%)  < ./elf/dl-misc.c:_dl_name_match_p (32x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    160 ( 0.02%)  < ./elf/dl-version.c:_dl_check_map_versions (4x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     73 ( 0.01%)  < ./elf/dl-load.c:_dl_map_object (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     65 ( 0.01%)  < ./elf/../sysdeps/x86/dl-procinfo.h:_dl_load_cache_lookup (1x)
-     24 ( 0.00%)  < ./elf/rtld.c:dl_main (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  6,485 ( 0.66%)  *  ./string/../sysdeps/x86_64/strcmp.S:strcmp [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  6,048 ( 0.61%)  < ./libio/fileops.c:_IO_file_underflow@@GLIBC_2.2.5 (252x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  6,048 ( 0.61%)  *  ./libio/genops.c:_IO_switch_to_get_mode [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  5,544 ( 0.56%)  *  ./libio/libioP.h:_IO_file_underflow@@GLIBC_2.2.5
-
- 10,042 ( 1.02%)  < ./elf/dl-lookup.c:do_lookup_x (92x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  5,071 ( 0.51%)  *  ./elf/dl-lookup.c:check_match [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  4,464 ( 0.45%)  < ./stdio-common/printf-parse.h:__vfprintf_internal (248x)
-  4,464 ( 0.45%)  *  ./string/../sysdeps/x86_64/multiarch/strchr-avx2.S:__strchrnul_avx2 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-114,409 (11.61%)  < ./libio/genops.c:__uflow (252x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  4,284 ( 0.43%)  *  ./libio/genops.c:_IO_default_uflow [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  3,780 ( 0.38%)  < ./malloc/malloc.c:_int_malloc (945x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  3,780 ( 0.38%)  *  ./malloc/malloc.c:alloc_perturb [/lib/x86_64-linux-gnu/libc-2.31.so]
-
- 34,639 ( 3.51%)  < main.c:startMatch (62x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
- 32,635 ( 3.31%)  < main.c:compareWords (61x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  3,596 ( 0.36%)  *  ./stdio-common/printf.c:printf [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  2,869 ( 0.29%)  *  ./libio/libioP.h:puts
-
-  2,418 ( 0.25%)  *  ./stdio-common/../libio/libioP.h:__vfprintf_internal
-
- 79,594 ( 8.08%)  < ./stdio-common/isoc99_scanf.c:__isoc99_scanf (6x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  2,333 ( 0.24%)  *  ./stdio-common/vfscanf-internal.c:__vfscanf_internal [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  3,488 ( 0.35%)  < ./libio/iogetline.c:_IO_getline (36x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  2,304 ( 0.23%)  *  ./libio/iogetline.c:_IO_getline_info [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  2,265 ( 0.23%)  < ./libio/ioputs.c:puts (151x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  2,265 ( 0.23%)  *  ./string/../sysdeps/x86_64/multiarch/strlen-avx2.S:__strlen_avx2 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  5,261 ( 0.53%)  < main.c:startMatch (31x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-    684 ( 0.07%)  < main.c:main (4x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  2,088 ( 0.21%)  *  ./libio/iofgets.c:fgets [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  1,910 ( 0.19%)  *  ./elf/dl-tunables.h:__GI___tunables_init
-
-  1,764 ( 0.18%)  < ./libio/fileops.c:_IO_file_read (252x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  1,764 ( 0.18%)  *  ./io/../sysdeps/unix/sysv/linux/read.c:read [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  1,764 ( 0.18%)  *  ./libio/libioP.h:_IO_default_uflow
-
-  1,764 ( 0.18%)  *  ./libio/libioP.h:__uflow
-
-  2,730 ( 0.28%)  < ./elf/dl-version.c:_dl_check_all_versions (4x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  1,709 ( 0.17%)  *  ./elf/dl-version.c:_dl_check_map_versions [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  1,648 ( 0.17%)  < ./stdio-common/vfprintf-internal.c:__vfprintf_internal (62x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  1,648 ( 0.17%)  *  ./stdio-common/_itoa.c:_itoa_word [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  1,586 ( 0.16%)  < main.c:startMatch (61x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  1,612 ( 0.16%)  *  ./string/../sysdeps/x86_64/multiarch/strcmp-avx2.S:__strncmp_avx2 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
- 37,440 ( 3.80%)  < main.c:startMatch (9x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  1,402 ( 0.14%)  *  main.c:printDictionary [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-
-  3,024 ( 0.31%)  < ./libio/fileops.c:_IO_file_underflow@@GLIBC_2.2.5 (252x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  1,260 ( 0.13%)  *  ./libio/fileops.c:_IO_file_read [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  1,240 ( 0.13%)  *  ./stdio-common/printf-parse.h:__vfprintf_internal
-
-  1,178 ( 0.12%)  < ./stdio-common/vfprintf-internal.c:__vfprintf_internal (62x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-  1,178 ( 0.12%)  *  ./string/../sysdeps/x86_64/multiarch/strlen-avx2.S:__strnlen_avx2 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  3,511 ( 0.36%)  < ./elf/dl-load.c:_dl_map_object (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  1,049 ( 0.11%)  *  ./elf/dl-load.c:_dl_map_object_from_fd [/lib/x86_64-linux-gnu/ld-2.31.so]
-
- 94,974 ( 9.64%)  < ./elf/../elf/dl-sysdep.c:_dl_sysdep_start (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    962 ( 0.10%)  *  ./elf/rtld.c:dl_main [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  7,545 ( 0.77%)  < ./elf/rtld.c:dl_main (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    923 ( 0.09%)  *  ./elf/dl-deps.c:_dl_map_object_deps [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    792 ( 0.08%)  < ./libio/iogetline.c:_IO_getline_info (36x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-    792 ( 0.08%)  *  ./string/../sysdeps/x86_64/multiarch/memchr-avx2.S:__memchr_avx2 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-  4,909 ( 0.50%)  < ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (8x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  1,621 ( 0.16%)  < ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave'2 (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    790 ( 0.08%)  *  ./elf/../elf/dl-runtime.c:_dl_fixup [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    788 ( 0.08%)  < ./elf/dl-cache.c:_dl_load_cache_lookup (11x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    782 ( 0.08%)  *  ./elf/dl-cache.c:_dl_cache_libcmp [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  1,310 ( 0.13%)  < ./string/../sysdeps/x86/cacheinfo.c:handle_intel.constprop.0 (6x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-    773 ( 0.08%)  *  ./string/../sysdeps/x86/cacheinfo.c:intel_check_word.constprop.0 [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-    688 ( 0.07%)  < ./stdlib/../stdlib/strtol.c:__strtol_internal (6x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-    688 ( 0.07%)  *  ./stdlib/../stdlib/strtol_l.c:____strtol_l_internal [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-    475 ( 0.05%)  < ./elf/dl-load.c:_dl_map_object (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    424 ( 0.04%)  < ./elf/dl-load.c:open_path (8x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    675 ( 0.07%)  *  ./elf/dl-load.c:open_verify.constprop.0 [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    642 ( 0.07%)  *  ./malloc/malloc.c:ptmalloc_init.part.0
-
-  1,373 ( 0.14%)  < ./elf/dl-load.c:_dl_map_object (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    639 ( 0.06%)  *  ./elf/dl-load.c:open_path [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    838 ( 0.09%)  < ./elf/dl-load.c:_dl_map_object_from_fd (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    291 ( 0.03%)  < ./elf/rtld.c:dl_main (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    630 ( 0.06%)  *  ./elf/dl-object.c:_dl_new_object [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    733 ( 0.07%)  < ./elf/dl-load.c:_dl_init_paths (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    594 ( 0.06%)  *  ./elf/dl-hwcaps.c:_dl_important_hwcaps [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    581 ( 0.06%)  *  ./elf/get-dynamic-info.h:_dl_map_object_from_fd
-
-    237 ( 0.02%)  < ./elf/dl-minimal.c:calloc (8x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     72 ( 0.01%)  < ./elf/dl-deps.c:_dl_map_object_deps (3x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     72 ( 0.01%)  < ./elf/dl-load.c:_dl_init_paths (3x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     72 ( 0.01%)  < ./string/strdup.c:strdup (3x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     48 ( 0.00%)  < ./elf/dl-object.c:_dl_new_object (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     24 ( 0.00%)  < ./elf/../elf/dl-tls.c:_dl_allocate_tls_storage (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     24 ( 0.00%)  < ./elf/dl-load.c:fillin_rpath.isra.0 (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     24 ( 0.00%)  < ./elf/dl-hwcaps.c:_dl_important_hwcaps (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    554 ( 0.06%)  *  ./elf/dl-minimal.c:malloc [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    537 ( 0.05%)  *  ./string/../bits/stdlib-bsearch.h:intel_check_word.constprop.0
-
-    504 ( 0.05%)  *  ./libio/../sysdeps/unix/sysv/linux/x86/lowlevellock.h:_IO_file_underflow@@GLIBC_2.2.5
-
-    312 ( 0.03%)  < ./elf/./dl-map-segments.h:_dl_map_object_from_fd (2x)
-     94 ( 0.01%)  < ./elf/dl-sort-maps.c:_dl_sort_maps (6x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     48 ( 0.00%)  < ./elf/dl-load.c:_dl_init_paths (4x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     33 ( 0.00%)  < ./elf/../elf/dl-tls.c:_dl_allocate_tls_init (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    487 ( 0.05%)  *  ./string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S:memset [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    468 ( 0.05%)  *  ./libio/libioP.h:fgets
-
-    449 ( 0.05%)  *  ./elf/../sysdeps/x86_64/dl-machine.h:_dl_start
-
-  5,994 ( 0.61%)  < ./elf/dl-deps.c:openaux (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-  2,448 ( 0.25%)  < ./elf/rtld.c:map_doit (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    438 ( 0.04%)  *  ./elf/dl-load.c:_dl_map_object [/lib/x86_64-linux-gnu/ld-2.31.so]
-
- 77,087 ( 7.82%)  < ./elf/rtld.c:dl_main (4x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    437 ( 0.04%)  *  ./elf/dl-reloc.c:_dl_relocate_object [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    831 ( 0.08%)  < ./elf/dl-load.c:_dl_map_object (7x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    762 ( 0.08%)  < ./elf/dl-version.c:_dl_check_map_versions (7x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    401 ( 0.04%)  *  ./elf/dl-misc.c:_dl_name_match_p [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    170 ( 0.02%)  < ./elf/dl-object.c:_dl_new_object (4x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    110 ( 0.01%)  < ./string/strdup.c:strdup (3x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     34 ( 0.00%)  < ./elf/dl-cache.c:_dl_load_cache_lookup (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     16 ( 0.00%)  < ./elf/../elf/dl-sysdep.c:_dl_sysdep_start (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     16 ( 0.00%)  < ./elf/dl-load.c:_dl_map_object (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     16 ( 0.00%)  < ./elf/dl-load.c:fillin_rpath.isra.0 (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     16 ( 0.00%)  < ./elf/dl-load.c:_dl_init_paths (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     16 ( 0.00%)  < ./elf/dl-hwcaps.c:_dl_important_hwcaps (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    394 ( 0.04%)  *  ./string/../sysdeps/x86_64/multiarch/../strlen.S:strlen [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    392 ( 0.04%)  < ./libio/iogetline.c:_IO_getline_info (36x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-    392 ( 0.04%)  *  ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms [/lib/x86_64-linux-gnu/libc-2.31.so]
-
-104,450 (10.60%)  < ./elf/rtld.c:_dl_start (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    378 ( 0.04%)  *  ./elf/../elf/dl-sysdep.c:_dl_sysdep_start [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    207 ( 0.02%)  < ./malloc/arena.c:ptmalloc_init.part.0 (11x) [/lib/x86_64-linux-gnu/libc-2.31.so]
-     74 ( 0.01%)  < ./elf/../sysdeps/x86/cpu-features.c:_dl_sysdep_start (4x)
-     38 ( 0.00%)  < ./elf/../elf/dl-tls.c:_dl_tls_static_surplus_init (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     19 ( 0.00%)  < ./elf/dl-hwcaps.c:_dl_important_hwcaps (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     19 ( 0.00%)  < ./elf/dl-cache.c:_dl_load_cache_lookup (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    375 ( 0.04%)  *  ./elf/dl-tunables.c:__tunable_get_val [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    236 ( 0.02%)  < ./elf/dl-fini.c:_dl_fini (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    215 ( 0.02%)  < ./elf/dl-deps.c:_dl_map_object_deps (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    357 ( 0.04%)  *  ./elf/dl-sort-maps.c:_dl_sort_maps [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    209 ( 0.02%)  < ./elf/dl-load.c:open_path (17x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     74 ( 0.01%)  < ./elf/dl-hwcaps.c:_dl_important_hwcaps (5x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     40 ( 0.00%)  < ./elf/dl-object.c:_dl_new_object (2x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     12 ( 0.00%)  < ./elf/../elf/dl-tls.c:_dl_allocate_tls_init (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-     12 ( 0.00%)  < ./elf/dl-load.c:fillin_rpath.isra.0 (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    347 ( 0.04%)  *  ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:mempcpy [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    387 ( 0.04%)  < ./elf/rtld.c:init_tls (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    330 ( 0.03%)  *  ./elf/../elf/dl-tls.c:_dl_allocate_tls_storage [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    327 ( 0.03%)  *  ./elf/do-rel.h:_dl_start
-
- 77,307 ( 7.84%)  < main.c:main (2x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  1,647 ( 0.17%)  < main.c:compareWords (1x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-  1,404 ( 0.14%)  < main.c:startMatch (2x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-    831 ( 0.08%)  < main.c:addNode (1x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-    791 ( 0.08%)  < main.c:printDictionary'2 (1x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-    663 ( 0.07%)  < main.c:addWords (1x) [/mnt/c/Users/Pietro Ammaturo/github/WordChecker/main]
-    320 ( 0.03%)  *  ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  1,428 ( 0.14%)  < ./elf/dl-load.c:_dl_map_object (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    317 ( 0.03%)  *  ./elf/dl-cache.c:_dl_load_cache_lookup [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-  1,841 ( 0.19%)  < ./elf/rtld.c:dl_main (1x) [/lib/x86_64-linux-gnu/ld-2.31.so]
-    317 ( 0.03%)  *  ./elf/dl-load.c:_dl_init_paths [/lib/x86_64-linux-gnu/ld-2.31.so]
-
-    302 ( 0.03%)  *  ./libio/../sysdeps/unix/sysv/linux/x86/lowlevellock.h:puts
-
-    300 ( 0.03%)  *  ./elf/get-dynamic-info.h:dl_main
-
-    297 ( 0.03%)  *  ./elf/./dl-map-segments.h:_dl_map_object_from_fd
-
---------------------------------------------------------------------------------
--- Auto-annotated source: main.c
---------------------------------------------------------------------------------
-Ir              
-
--- line 102 ----------------------------------------
-     .           //	utils	//
-     .           //////////////
-     .           
-     .           // - 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z _ a b c d e f g h i j k l m n o p q r s t u v w x y z
-     .           // 0 1 2 3 4 5 6 7 8 9 101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263
-     .           int characterToIndex(char c)
-     .           {
-     .           	// 11-36
-11,361 ( 1.15%)  	if (c <= 'Z' && c >= 'A')
-     .           	{
- 3,287 ( 0.33%)  		return c - 'A' + 11;
-     .           	}
-     .           	// 38-64
- 6,420 ( 0.65%)  	else if (c >= 'a' && c <= 'z')
-     .           	{
- 2,704 ( 0.27%)  		return c - 'a' + 38;
-     .           	}
-     .           	// 1-10
- 2,364 ( 0.24%)  	else if (c <= '9' && c >= '0')
-     .           	{
-   788 ( 0.08%)  		return c - '0' + 1;
-     .           	}
-     .           	// 0
-     .           	else if (c == '-')
-     .           	{
- 1,001 ( 0.10%)  		return 0;
-     .           	}
-     .           	// 37
-   108 ( 0.01%)  	return 37;
-     .           }
-     .           _Bool findWord(tree_t *head)
-     .           {
-     .           	int i;
-     .           	tree_t *treeCursor;
-     .           	list_t *rightChild;
-     .           
-     .           	treeCursor = head;
-     .           
-     .           	// scorro la parola inserita
- 1,460 ( 0.15%)  	for (i = 0; i < wordLength; i++)
-     .           	{
-     .           		// trovo il figlio, devo pure aggiornare l'head nel caso cambi
-   652 ( 0.07%)  		rightChild = findChild(treeCursor->child, word[i], treeCursor);
-     .           		// se lo trovo proseguo la scansione
-     .           		if (rightChild)
-     .           			// sposto il cursore nel figlio trovato
-     .           			treeCursor = rightChild->node;
-     .           		else
-     .           			// se non lo trovo termino ritornando 0
-    12 ( 0.00%)  			return 0;
-     .           	}
-   124 ( 0.01%)  	return 1;
-    12 ( 0.00%)  }
-     .           
-     .           //////////////
-     .           //	alberi	//
-     .           //////////////
-     .           tree_t *addNode(tree_t *h, char c, int d, tree_t *p)
-     8 ( 0.00%)  {
-     .           	// adding node
- 1,880 ( 0.19%)  	h = (tree_t *)malloc(sizeof(tree_t));
-91,728 ( 9.31%)  => ./malloc/malloc.c:malloc (468x)
-   938 ( 0.10%)  	if (h)
-     .           	{
-   469 ( 0.05%)  		h->parent = p;
-   469 ( 0.05%)  		h->character = c;
-   469 ( 0.05%)  		h->depth = d;
-   469 ( 0.05%)  		h->valid = 1;
-   469 ( 0.05%)  		h->child = NULL;
-     .           	}
-     .           	else
-     .           	{
-     .           		printf("memory error");
-     .           	}
-     .           	return h;
-     7 ( 0.00%)  }
-     .           tree_t *addWord(tree_t *head)
-   780 ( 0.08%)  {
-     .           	int i;
-     .           	tree_t *treeCursor;
-     .           	list_t *rightChild;
-     .           
-   130 ( 0.01%)  	treeCursor = head;
-     .           
-     .           	// scorro la parola inserita
- 2,730 ( 0.28%)  	for (i = 0; i < wordLength; i++)
-     .           	{
-     .           		// trovo il figlio o lo aggiungo se non c'è, devo pure aggiornare l'head nel caso cambi
- 5,200 ( 0.53%)  		treeCursor->child = findOrAddChild(treeCursor->child, word[i], i, treeCursor, &rightChild);
-233,816 (23.72%)  => main.c:findOrAddChild (650x)
-     .           		// sposto il cursore nel figlio (che sia stato appena aggiunto o meno è indifferente)
- 1,300 ( 0.13%)  		treeCursor = rightChild->node;
-     .           	}
-     .           	return head;
-   910 ( 0.09%)  }
-     .           tree_t *addWords(tree_t *head)
-    60 ( 0.01%)  {
-     .           	// printf("\n----inizio inserimento----\n");
-     .           	int i, j;
-     .           	char character;
-     .           	// prendi primo carattere
-     .           	do
-     .           	{
-    43 ( 0.00%)  		character = getc(stdin);
- 2,448 ( 0.25%)  => ./libio/getc.c:getc (12x)
-   663 ( 0.07%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-    52 ( 0.01%)  	} while (character == EOS || character == EOL || character == EOW);
-     .           
-     .           	// mentre non ricevo nuovi comandi
-   296 ( 0.03%)  	for (i = 0; character != '+'; i++)
-     .           	{
-     .           		// acquisisco la parola al contrario
- 2,600 ( 0.26%)  		for (j = 0; j < wordLength; j++)
-     .           		{
- 1,300 ( 0.13%)  			word[j] = character;
- 1,950 ( 0.20%)  			character = getc(stdin);
-11,050 ( 1.12%)  => ./libio/getc.c:getc (650x)
-     .           		}
-     .           		// la aggiungo al dizionario
-   260 ( 0.03%)  		addWord(head);
-244,866 (24.84%)  => main.c:addWord (130x)
-     .           		// prendi primo carattere della prossima riga
-   390 ( 0.04%)  		character = getc(stdin);
-26,520 ( 2.69%)  => ./libio/getc.c:getc (130x)
-     .           	}
-     .           	// printf("\n----fine inserimento----\n");
-     .           
-     .           	return head;
-    60 ( 0.01%)  }
-     .           // rende valido l'elemento che gli viene passato e tutti i suoi figli
-     .           void validBranch(tree_t *h)
-    40 ( 0.00%)  {
-     .           	list_t *listCursor;
-     .           
-     .           	// All the children
-11,462 ( 1.16%)  	for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
- 2,310 ( 0.23%)  		validBranch(listCursor->node);
-     .           
- 2,320 ( 0.24%)  	h->valid = 1;
-    40 ( 0.00%)  }
-     .           //////////////
-     .           //	liste	//
-     .           //////////////
-     .           
-     .           // unica funzione che aggiunge il figlio se non c'è
-     .           // oppure ritorna l'indirizzo del figlio se c'è
-     .           list_t *findOrAddChild(list_t *h, char c, int d, tree_t *p, list_t **found)
- 6,500 ( 0.66%)  {
-     .           	list_t *cursor, *previous;
-     .           	previous = NULL;
-     .           	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-15,220 ( 1.54%)  	for (cursor = h; cursor != NULL && cursor->node->character < c; cursor = cursor->nextSibiling)
-     .           		previous = cursor;
-     .           	// se non lo trovo lo aggiungo
-   428 ( 0.04%)  	if (cursor == NULL || cursor->node->character > c)
-     .           	{
- 3,276 ( 0.33%)  		cursor = addChildBetween(previous, cursor, c, d, p);
-203,192 (20.62%)  => main.c:addChildBetween (468x)
-     .           	}
-     .           	// se il precedente è null, ho aggiunto all'inizio della lista cambiando l'head
-     .           	if (previous == NULL)
-     .           	{
- 1,300 ( 0.13%)  		h = cursor;
-     .           	}
-     .           	// in ogni caso ritorno cursor, se non l' ho aggiunto significa che:
-     .           	// cursor != NULL && cursor->node->character == c
-   650 ( 0.07%)  	*found = cursor;
-     .           	return h;
- 3,250 ( 0.33%)  }
-     .           // aggiunge elemento alla lista tra precedente e prossimo
-     .           list_t *addChildBetween(list_t *last, list_t *next, char c, int d, tree_t *p)
- 5,616 ( 0.57%)  {
-     .           	list_t *newChild;
-     .           
- 1,872 ( 0.19%)  	newChild = (list_t *)malloc(sizeof(list_t));
-91,728 ( 9.31%)  => ./malloc/malloc.c:malloc (468x)
-     .           	// adding node
-   936 ( 0.09%)  	if (newChild)
-     .           	{
-   468 ( 0.05%)  		newChild->nextSibiling = next;
-   468 ( 0.05%)  		newChild->node = addNode(newChild->node, c, d, p);
-     .           		// se c'era effettivamente un nodo prima di newChild
-   936 ( 0.09%)  		if (last)
-     .           		{
-    80 ( 0.01%)  			last->nextSibiling = newChild;
-     .           		}
-     .           	}
-     .           	else
-     .           	{
-     .           		printf("memory error");
-     .           	}
-     .           	return newChild;
- 4,212 ( 0.43%)  }
-     .           // trova e ritorna l'indirizzo del figlio se c'è, altrimenti ritorna null
-     .           list_t *findChild(list_t *h, char c, tree_t *p)
-     .           {
-     .           	list_t *cursor;
-     .           	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
- 6,211 ( 0.63%)  	for (cursor = h; cursor != NULL && cursor->node->character < c; cursor = cursor->nextSibiling)
-     .           		;
-     .           	// se non lo trovo ritorno null, non serve scorrerli tutti
-   325 ( 0.03%)  	if (cursor == NULL || cursor->node->character > c)
-     .           	{
-     .           		cursor = NULL;
-     .           	}
-     .           	// in ogni caso ritorno cursor
-     .           	return cursor;
-     .           }
-     .           ////////////////////
-     .           //	CLOSE TO I/O  //
-     .           ////////////////////
-     .           void filterDictionary(tree_t *h)
-16,075 ( 1.63%)  {
-     .           	list_t *listCursor;
-     .           	int characterIndex;
-     .           
-     .           	// controllo di non essere nell'head
- 9,645 ( 0.98%)  	if (h->character != EOS)
-     .           	{
- 3,142 ( 0.32%)  		characterIndex = characterToIndex(h->character);
-     .           		// conto i caratteri
-15,710 ( 1.59%)  		characterCounter[characterIndex]++;
-     .           		// se il carattere non si può trovare a quella posizione (profondità)
-     .           		// printf("\nchecking position of: %c at: %d, result: %d\n", h->character, h->depth, info->isPositionOfCharacterValid[h->depth][characterToIndex(h->character)]);
-18,852 ( 1.91%)  		if (!(info.isPositionOfCharacterValid[h->depth][characterIndex]))
-     .           		{
-     .           			// printf("\nwrong position of: %c at: %d\n", h->character, h->depth);
-     .           			//    rendo non valido il branch dalla radice morta in giu e decremento i contatori
-     .           			//  unValidBranch(findRootOfDeadBranch(h));
-     .           			// cutBranch(h);
-     .           			h->valid = 0;
-     .           			// lowerCounters(h, characterCounter);
-     .           			characterCounter[characterIndex]--;
-     .           			return;
-     .           		}
-     .           		// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
-13,258 ( 1.35%)  		if (characterCounter[characterIndex] > info.discoveredOccurrences[characterIndex] && info.isDefinitive[characterIndex])
-     .           		{
-     .           			// printf("\nto many of: %c\n", h->character);
-     .           			//   rendo non valido il branch dalla radice morta in su e decremento i contatori
-   370 ( 0.04%)  			h->valid = 0;
-   370 ( 0.04%)  			characterCounter[characterIndex]--;
-     .           			return;
-     .           		}
-   301 ( 0.03%)  		if (characterCounter[characterIndex] == info.discoveredOccurrences[characterIndex])
-     .           		{
-   301 ( 0.03%)  			lettersWithEnoughOccurrences++;
-     .           		}
-     .           		// quando raggiungo la fine della parola
- 8,777 ( 0.89%)  		if (h->child == NULL)
-     .           		{
- 1,383 ( 0.14%)  			if (lettersWithEnoughOccurrences == info.numberOfDiscoveredOccurrences)
-     .           			{
-     .           			}
-     .           			else
-     .           			{
-     .           				// rendo non valido il branch dalla radice morta in su e decremento i contatori
-   168 ( 0.02%)  				h->valid = 0;
-     .           			}
-     .           		}
-     .           		// All the valid children
- 9,705 ( 0.98%)  		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
- 9,705 ( 0.98%)  			if (listCursor->node->valid)
- 2,596 ( 0.26%)  				filterDictionary(listCursor->node);
-314,643 (31.92%)  => main.c:filterDictionary'2 (2,596x)
-     .           		;
-     .           		// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
-     .           		// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
-10,166 ( 1.03%)  		if (characterCounter[characterIndex] == info.discoveredOccurrences[characterIndex])
-     .           		{
-   301 ( 0.03%)  			lettersWithEnoughOccurrences--;
-     .           		}
-     .           		// al ritorno decremento la lettera
- 5,083 ( 0.52%)  		characterCounter[characterIndex]--;
-     .           	}
-     .           
-     .           	else
- 5,403 ( 0.55%)  		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
- 5,234 ( 0.53%)  			if (listCursor->node->valid)
- 1,092 ( 0.11%)  				filterDictionary(listCursor->node);
-167,098 (16.95%)  => main.c:filterDictionary'2 (546x)
-     .           	;
-19,290 ( 1.96%)  }
-     .           void countFiltered(tree_t *h, int *result)
- 3,696 ( 0.37%)  {
-     .           	list_t *listCursor;
-     .           
- 6,786 ( 0.69%)  	if (h->child == NULL)
-   586 ( 0.06%)  		(*result)++;
-     .           	else
-     .           		// All the children
-12,462 ( 1.26%)  		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
-12,709 ( 1.29%)  			if (listCursor->node->valid)
- 1,396 ( 0.14%)  				countFiltered(listCursor->node, result);
-13,213 ( 1.34%)  => main.c:countFiltered (462x)
- 3,696 ( 0.37%)  }
-     .           
-     .           //////////////
-     .           //	I/O	    //
-     .           //////////////
-     .           void printDictionary(tree_t *h)
-   792 ( 0.08%)  {
-     .           	list_t *listCursor;
-     .           
-     .           	// posiziona il carattere nella parola contenitore
- 3,168 ( 0.32%)  	word[h->depth] = h->character;
-     .           
-     .           	// printf("%c, %d\n", h->character, h->valid);
-     .           
-     .           	// stampa la parola quando raggiungi la fine
- 2,376 ( 0.24%)  	if (h->child == NULL)
-   406 ( 0.04%)  		puts(word);
-20,615 ( 2.09%)  => ./libio/ioputs.c:puts (133x)
-   791 ( 0.08%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-     .           	// printf("%.*s\n", wordLength, word);
-     .           	else
-     .           		// All the children
- 3,138 ( 0.32%)  		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
- 3,138 ( 0.32%)  			if (listCursor->node->valid)
- 1,566 ( 0.16%)  				printDictionary(listCursor->node);
-36,038 ( 3.66%)  => main.c:printDictionary'2 (101x)
- 1,450 ( 0.15%)  }
-     .           void compareWords(char *solution, char *result, _Bool *isFree)
-   496 ( 0.05%)  {
-     .           	int i, j, found, definitive, characterIndex;
-     .           
- 1,620 ( 0.16%)  	for (i = 0; i < wordLength; i++)
-     .           	{
-   930 ( 0.09%)  		characterIndex = characterToIndex(word[i]);
- 1,105 ( 0.11%)  		if (word[i] == solution[i])
-     .           		{
-     .           			// giusta al posto giusto
-    34 ( 0.00%)  			result[i] = '+';
-     .           			// segno che è già stata associata
-    34 ( 0.00%)  			isFree[i] = 0;
-     .           			// metto a zero tutti i caratteri (nessuno è valido tranne quello giusto al posto giusto)
-     .           			for (j = 0; j < ALPH_LEN; j++)
-     .           			{
-   204 ( 0.02%)  				info.isPositionOfCharacterValid[i][j] = 0;
-     .           			}
-     .           			// metto ad 1 quello giusto al posto giusto
-    68 ( 0.01%)  			info.isPositionOfCharacterValid[i][characterIndex] = 1;
-     .           			// conto la lettera
-    34 ( 0.00%)  			characterCounter[characterIndex]++;
-     .           		}
-     .           		else
-     .           		{
-     .           			// per ora non è stata trovata
-   276 ( 0.03%)  			result[i] = '/';
-     .           			// non è associata
-   276 ( 0.03%)  			isFree[i] = 1;
-     .           			// i caratteri che non sono risultati giusti al posto giusto li rimuovo
-   828 ( 0.08%)  			info.isPositionOfCharacterValid[i][characterIndex] = 0;
-     .           		}
-     .           	}
- 1,674 ( 0.17%)  	for (i = 0; i < wordLength; i++)
-     .           	{
-   930 ( 0.09%)  		characterIndex = characterToIndex(word[i]);
-   620 ( 0.06%)  		definitive = 0;
-     .           		found = 0;
- 7,252 ( 0.74%)  		for (j = 0; j < wordLength && !found; j++)
-     .           		{
-     .           			// controllo se esiste una uguale non associata e non fissata (ancora '/' e non '+')
- 3,148 ( 0.32%)  			if (word[i] == solution[j] && result[i] != '+')
-     .           			{
-     .           				// se trovo una non associata
-    46 ( 0.00%)  				if (isFree[j])
-     .           				{
-     .           					// trovata, devo passare alla prossima lettera
-     .           					// anche per non contare le altre
-     .           					found = 1;
-     .           					// giusta al posto sbagliato
-    23 ( 0.00%)  					result[i] = '|';
-     .           					// conto le lettere
-    46 ( 0.00%)  					characterCounter[characterIndex]++;
-     .           					// segno che è già stata associata
-    23 ( 0.00%)  					isFree[j] = 0;
-     .           					// se prima pensavo fosse definitiva ho scoperto che non lo è
-     .           					definitive = 0;
-     .           				}
-     .           				// potrei trovare una da associare dopo, ma se non la trovassi avrei le occorrenze definitive
-     .           				else
-     .           				{
-   310 ( 0.03%)  					definitive = 1;
-     .           				}
-     .           			}
-     .           		}
-   574 ( 0.06%)  		if (definitive)
-     .           		{
-     .           			info.discoveredOccurrences[characterIndex] = info.trueOccurrences[characterIndex];
-     .           			info.isDefinitive[characterIndex] = 1;
-     .           		}
-     .           		// controllo se viene trovata
-     .           		found = 0;
- 4,502 ( 0.46%)  		for (j = 0; j < wordLength && !found; j++)
-     .           		{
-     .           			// controllo se viene trovata
- 3,892 ( 0.39%)  			if (word[i] == solution[j])
-     .           			{
-     .           				// segno che è stata trovata e posso uscire dal ciclo
-     .           				found = 1;
-     .           			}
-     .           		}
-     .           		// se questo è vero, è proprio sbagliata!!, la rimuovo in toto (da ogni posizione)
-     .           		if (!found)
-     .           		{
- 5,313 ( 0.54%)  			for (j = 0; j < wordLength; j++)
-     .           			{
- 2,024 ( 0.21%)  				info.isPositionOfCharacterValid[j][characterIndex] = 0;
-     .           			}
-     .           		}
-     .           	}
-   372 ( 0.04%)  	info.numberOfDiscoveredOccurrences = 0;
-     .           	// aggiorno le occorrenze che non sono già definitive
-16,114 ( 1.63%)  	for (int i = 0; i < ALPH_LEN; i++)
-     .           	{
-     .           		// se non ho già stabilito il numero definitivo di occorrenze per questa lettera
- 7,936 ( 0.81%)  		if (!(info.isDefinitive[i]))
-     .           		{
-     .           			// non c'è pericolo di contare più occorrenze di quelle massime
-     .           			// ogni volta controllo se è stata associata la lettera
-19,840 ( 2.01%)  			if (characterCounter[i] > info.discoveredOccurrences[i])
-     .           			{
-    42 ( 0.00%)  				info.discoveredOccurrences[i] = characterCounter[i];
-     .           			}
-     .           		}
-     .           		// aggiorno il numero di occorrenze scoperte
- 7,936 ( 0.81%)  		if (info.discoveredOccurrences[i] > 0)
-     .           		{
-   390 ( 0.04%)  			info.numberOfDiscoveredOccurrences++;
-     .           		}
-     .           	}
-     .           	// stampa risultato del confronto
-   314 ( 0.03%)  	printf("%.*s\n", wordLength, result);
-32,635 ( 3.31%)  => ./stdio-common/printf.c:printf (61x)
- 1,647 ( 0.17%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-     .           
-     .           	// mostro caratteri che posso trovare alle posizioni
-     .           	/*
-     .           		for (i = 0; i < wordLength; i++)
-     .           		{
-     .           			for (j = 0; j < ALPH_LEN; j++)
-     .           				printf("-%d-", info->isPositionOfCharacterValid[i][j]);
-     .           			printf("\n");
--- line 528 ----------------------------------------
--- line 549 ----------------------------------------
-     .           			printf("%d", info->trueOccurrences[i]);
-     .           		}
-     .           		printf("\n");
-     .           		printf("\number of discovered\n");
-     .           		printf("%d", info->numberOfDiscoveredOccurrences);
-     .           		printf("\n");
-     .           	*/
-     .           	return;
-   372 ( 0.04%)  }
-     .           void startMatch(tree_t *head, char *solution, char *result, _Bool *isFree)
-    60 ( 0.01%)  {
-     .           	int i, j, attempts;
-     .           	char character;
-     .           	char command[MAX_COMMAND_LENGTH];
-     .           	int filteredCounter;
-     .           
-     .           	//  prendo la soluzione
-    95 ( 0.01%)  	for (i = 0; i < wordLength; i++)
-   100 ( 0.01%)  		solution[i] = getc(stdin);
- 1,360 ( 0.14%)  => ./libio/getc.c:getc (25x)
-     .           	// prendo il null
-    15 ( 0.00%)  	character = getc(stdin);
-    85 ( 0.01%)  => ./libio/getc.c:getc (5x)
-     .           	// scan per sapere quanti tentativi ho a disposizione in questa partita
-    30 ( 0.00%)  	if (scanf("%d", &attempts))
- 3,924 ( 0.40%)  => ./stdio-common/isoc99_scanf.c:__isoc99_scanf (5x)
-     .           		;
-     .           	//  prendi primo carattere
-     .           	do
-     .           	{
-    40 ( 0.00%)  		character = getc(stdin);
- 1,105 ( 0.11%)  => ./libio/getc.c:getc (10x)
-    40 ( 0.00%)  	} while (character == EOS || character == EOL || character == EOW);
-     .           
-     .           	// inizializzo i caratteri che posso trovare alle posizioni
-    15 ( 0.00%)  	for (i = 0; i < wordLength; i++)
-     .           		for (j = 0; j < ALPH_LEN; j++)
-    44 ( 0.00%)  			info.isPositionOfCharacterValid[i][j] = 1;
-   689 ( 0.07%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-   164 ( 0.02%)  => ./string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S:__memset_avx2_unaligned_erms (4x)
-     .           	// inizializzo il numero di caratteri trovati
-     .           	for (i = 0; i < ALPH_LEN; i++)
-    45 ( 0.00%)  		info.discoveredOccurrences[i] = 0;
-     .           	// inizializzo il numero di caratteri della soluzione
-     .           	for (i = 0; i < ALPH_LEN; i++)
-    20 ( 0.00%)  		info.trueOccurrences[i] = 0;
-     .           	// conto i caratteri della soluzione
-    80 ( 0.01%)  	for (i = 0; i < wordLength; i++)
-   100 ( 0.01%)  		info.trueOccurrences[characterToIndex(solution[i])]++;
-     .           	// inizializzo i definitivi
-     .           	for (i = 0; i < ALPH_LEN; i++)
-    25 ( 0.00%)  		info.isDefinitive[i] = 0;
-     .           	// inizializzo le occorrenze scoperte
-     5 ( 0.00%)  	info.numberOfDiscoveredOccurrences = 0;
-     .           
-     .           	// le parole provate sono minori del numero di tentativi
-     5 ( 0.00%)  	i = 0;
-   193 ( 0.02%)  	while (i < attempts)
-     .           	{
-     .           		// controllo se ho ricevuto comandi durante una partita
-   191 ( 0.02%)  		if (character == '+')
-     .           		{
-   120 ( 0.01%)  			if (fgets(command, MAX_COMMAND_LENGTH, stdin))
- 3,380 ( 0.34%)  => ./libio/iofgets.c:fgets (20x)
-     .           				;
-     .           			// comando per stampare filtrate durante una partita
-   138 ( 0.01%)  			if (strcmp(command, "stampa_filtrate\n") == 0)
-     .           			{
-     .           				// printf("\n---printing_dictionary---\n");
-    27 ( 0.00%)  				printDictionary(head);
-37,440 ( 3.80%)  => main.c:printDictionary (9x)
-     .           			}
-     .           			// comando per aggiungere parole al dizionario durante una partita
-    99 ( 0.01%)  			else if (strcmp(command, "inserisci_inizio\n") == 0)
-     .           			{
-    33 ( 0.00%)  				head = addWords(head);
-181,453 (18.41%)  => main.c:addWords (11x)
-     .           				// devo "buttare" la parte finale di comando ("inserisci fine")
-    55 ( 0.01%)  				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
- 1,881 ( 0.19%)  => ./libio/iofgets.c:fgets (11x)
-     .           					;
-     .           				// inizializzo il contatore di caratteri a zero
-     .           				for (j = 0; j < ALPH_LEN; j++)
-     .           				{
-   407 ( 0.04%)  					characterCounter[j] = 0;
-     .           				}
-     .           				// inizializzo i free
-    33 ( 0.00%)  				for (j = 0; j < wordLength; j++)
-    22 ( 0.00%)  					isFree[i] = 0;
-     .           				// inizializzo il numero di lettere che hanno abbastanza occorrenze
-    11 ( 0.00%)  				lettersWithEnoughOccurrences = 0;
-     .           				// filtro il dizionario aggiornando i validi
-    33 ( 0.00%)  				filterDictionary(head);
-29,942 ( 3.04%)  => main.c:filterDictionary (11x)
-     .           			}
-     .           		}
-     .           		else
-     .           		{
-     .           			// acquisisco la parola
- 1,850 ( 0.19%)  			for (j = 0; j < wordLength; j++)
-     .           			{
-   740 ( 0.08%)  				word[j] = character;
- 1,480 ( 0.15%)  				character = getc(stdin);
- 6,290 ( 0.64%)  => ./libio/getc.c:getc (370x)
-     .           			}
-     .           			// controllo se la parola è presente nel dizionario
-   296 ( 0.03%)  			if (findWord(head))
- 8,796 ( 0.89%)  => main.c:findWord (74x)
-     .           			{
-     .           				// incremento il contatore di tentativi (valgono solo i tentativi validi)
-    62 ( 0.01%)  				i++;
-   438 ( 0.04%)  				if (strncmp(word, solution, wordLength) == 0)
- 1,586 ( 0.16%)  => ./string/../sysdeps/x86_64/multiarch/strcmp-avx2.S:__strncmp_avx2 (61x)
-   715 ( 0.07%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-     .           				{
-     .           					printf("ok\n");
-     .           					validBranch(head);
-     .           					return;
-     .           				}
-     .           				// inizializzo il contatore delle filtrate a zero
-    62 ( 0.01%)  				filteredCounter = 0;
-     .           				// inizializzo il contatore di caratteri a zero
-     .           				for (j = 0; j < ALPH_LEN; j++)
-     .           				{
- 2,294 ( 0.23%)  					characterCounter[j] = 0;
-     .           				}
-     .           				// inizializzo i free
-   124 ( 0.01%)  				for (j = 0; j < wordLength; j++)
-   124 ( 0.01%)  					isFree[i] = 0;
-     .           				// paragono la parola alla soluzione, stampo il risultato del confronto e aggiorno info
-   248 ( 0.03%)  				compareWords(solution, result, isFree);
-128,787 (13.07%)  => main.c:compareWords (62x)
-     .           				// inizializzo il contatore di caratteri a zero
-     .           				for (j = 0; j < ALPH_LEN; j++)
-     .           				{
- 2,232 ( 0.23%)  					characterCounter[j] = 0;
-     .           				}
-     .           				// inizializzo i free
-   186 ( 0.02%)  				for (j = 0; j < wordLength; j++)
-   124 ( 0.01%)  					isFree[i] = 0;
-     .           				// inizializzo il numero di lettere che hanno abbastanza occorrenze
-    62 ( 0.01%)  				lettersWithEnoughOccurrences = 0;
-     .           				// filtro il dizionario aggiornando i validi
-   124 ( 0.01%)  				filterDictionary(head);
-149,907 (15.21%)  => main.c:filterDictionary (62x)
-     .           				// stampa numero di parole rimaste
-     .           				countFiltered(head, &filteredCounter);
-   372 ( 0.04%)  				printf("%d\n", filteredCounter);
-34,639 ( 3.51%)  => ./stdio-common/printf.c:printf (62x)
-     .           			}
-     .           			else
-     .           			{
-    36 ( 0.00%)  				printf("not_exists\n");
- 1,836 ( 0.19%)  => ./libio/ioputs.c:puts (12x)
-     .           			}
-     .           		}
-     .           		// se ho tentativi rimanenti
-   188 ( 0.02%)  		if (i < attempts)
-     .           			// prendi primo carattere della prossima riga
-   356 ( 0.04%)  			character = getc(stdin);
-18,156 ( 1.84%)  => ./libio/getc.c:getc (89x)
-     .           	}
-     .           	if (i >= attempts)
-     .           	{
-     .           		// printf("ultimo car: %c\n", character);
-    15 ( 0.00%)  		printf("ko\n");
-   785 ( 0.08%)  => ./libio/ioputs.c:puts (5x)
-    10 ( 0.00%)  		validBranch(head);
-16,172 ( 1.64%)  => main.c:validBranch (5x)
-     .           	}
-     .           
-     .           	return;
-    40 ( 0.00%)  }
-     .           int main(int argc, char *argv[])
-     7 ( 0.00%)  {
-     .           	tree_t *dictionary = NULL;
-     .           	char character;
-     .           	char *solution, *result;
-     .           	_Bool *isFree;
-     .           	char command[MAX_COMMAND_LENGTH + 1];
-     .           
-     .           	// scan per sapere quanto è lunga la parola
-     9 ( 0.00%)  	if (scanf("%d", &wordLength))
-76,510 ( 7.76%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-     .           		;
-     .           	// creo dizionario vuoto
-     7 ( 0.00%)  	dictionary = addNode(dictionary, '\0', (wordLength - 1), NULL);
-   861 ( 0.09%)  => main.c:addNode (1x)
-     .           
-     .           	// creo vettore di vettori statici
-     7 ( 0.00%)  	info.isPositionOfCharacterValid = malloc(sizeof(_Bool) * wordLength * ALPH_LEN);
-   191 ( 0.02%)  => ./malloc/malloc.c:malloc (1x)
-     .           	// creating array where to put word
-     5 ( 0.00%)  	word = (char *)malloc(sizeof(char) * wordLength);
-   189 ( 0.02%)  => ./malloc/malloc.c:malloc (1x)
-     .           	// creo vettore dove mettere la soluione
-     5 ( 0.00%)  	solution = (char *)malloc(sizeof(char) * wordLength);
-   189 ( 0.02%)  => ./malloc/malloc.c:malloc (1x)
-     .           	// creo vettore dove mettere il risultato del confronto
-     4 ( 0.00%)  	result = (char *)malloc(sizeof(char) * wordLength);
-   189 ( 0.02%)  => ./malloc/malloc.c:malloc (1x)
-     .           	// creating array where to put check for pairing
-     3 ( 0.00%)  	isFree = (_Bool *)malloc(sizeof(_Bool) * wordLength);
-   189 ( 0.02%)  => ./malloc/malloc.c:malloc (1x)
-     .           
-    14 ( 0.00%)  	if (word && solution && result && isFree && info.isPositionOfCharacterValid)
-     .           	{
-     .           		// aggiungo per la prima volta parole al dizionario
-     4 ( 0.00%)  		dictionary = addWords(dictionary);
-111,105 (11.27%)  => main.c:addWords (1x)
-     .           
-     .           		// sicuramente ho terminato con un comando
-     .           		// il carattere '+' con cui inizia il comando nuova_partita è stato mangiato da addWords che lo ha "scambiato" per il '+' di inserisci_fine
-     .           		character = '+';
-     .           		// se non sono in una partita e non sto aggiungendo parole, posso solo ricevere comandi, ma controlliamo ugualmente per sicurezza
-    11 ( 0.00%)  		while (character == '+')
-     .           		{
-    29 ( 0.00%)  			if (fgets(command, MAX_COMMAND_LENGTH, stdin))
-   797 ( 0.08%)  => ./elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
-   684 ( 0.07%)  => ./libio/iofgets.c:fgets (4x)
-     .           				;
-     .           			// printf("\ncomando: %s", command);
-     .           			//  comando per iniziare una partita
-    41 ( 0.00%)  			if (strcmp(command, "nuova_partita\n") == 0)
-     .           			{
-    30 ( 0.00%)  				startMatch(dictionary, solution, result, isFree);
-684,171 (69.42%)  => main.c:startMatch (5x)
-     .           			}
-     .           			// comando per aggiungere parole al dizionario tra una partita e l'altra
-     2 ( 0.00%)  			else if (strcmp(command, "inserisci_inizio\n") == 0)
-     .           			{
-     .           				dictionary = addWords(dictionary);
-     .           				// devo "buttare" la parte finale di comando ("inserisci fine")
-     .           				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
-     .           					;
-     .           			}
-     .           			// prendi primo carattere (tendenzialmente sarà un '+'), se non lo è termino l'esecuzione (sarà un \n)
-    15 ( 0.00%)  			character = getc(stdin);
- 1,020 ( 0.10%)  => ./libio/getc.c:getc (5x)
-     .           		}
-     .           	}
-     .           	else
-     .           	{
-     .           		printf("memory error");
-     .           	}
-     .           
-     .           	return 0;
-     9 ( 0.00%)  }
-     .           
-     .           // si può fare probabilemnte a meno del campo parent e depth, per ora li lascio
-     .           
-     .           // c'è un problema con il riconoscimento delle giuste al posto sbagliato!
-     .           // oppure con il contatore delle occorrenze
-     .           // problema con il contatore di occorrenze, il decremento forse è sbagliato come idea
-     .           // idea: contarle dal basso verso l'alto
-     .           // non decrementarle più con findRootOfDeadBranch-- line 770 ----------------------------------------
-
---------------------------------------------------------------------------------
-The following files chosen for auto-annotation could not be found:
---------------------------------------------------------------------------------
-  ./elf/../elf/dl-runtime.c
-  ./elf/../elf/dl-sysdep.c
-  ./elf/../elf/dl-tls.c
-  ./elf/../sysdeps/x86_64/dl-machine.h
-  ./elf/../sysdeps/x86_64/dl-trampoline.h
-  ./elf/./dl-map-segments.h
-  ./elf/dl-addr.c
-  ./elf/dl-cache.c
-  ./elf/dl-deps.c
-  ./elf/dl-hwcaps.c
-  ./elf/dl-load.c
-  ./elf/dl-lookup.c
-  ./elf/dl-minimal.c
-  ./elf/dl-misc.c
-  ./elf/dl-object.c
-  ./elf/dl-reloc.c
-  ./elf/dl-sort-maps.c
-  ./elf/dl-tunables.c
-  ./elf/dl-tunables.h
-  ./elf/dl-version.c
-  ./elf/do-rel.h
-  ./elf/get-dynamic-info.h
-  ./elf/rtld.c
-  ./io/../sysdeps/unix/sysv/linux/read.c
-  ./libio/../sysdeps/unix/sysv/linux/x86/lowlevellock.h
-  ./libio/fileops.c
-  ./libio/genops.c
-  ./libio/getc.c
-  ./libio/iofgets.c
-  ./libio/iogetline.c
-  ./libio/ioputs.c
-  ./libio/libioP.h
-  ./malloc/malloc.c
-  ./stdio-common/../libio/libioP.h
-  ./stdio-common/_itoa.c
-  ./stdio-common/printf-parse.h
-  ./stdio-common/printf.c
-  ./stdio-common/vfprintf-internal.c
-  ./stdio-common/vfscanf-internal.c
-  ./stdlib/../stdlib/strtol_l.c
-  ./string/../bits/stdlib-bsearch.h
-  ./string/../sysdeps/x86/cacheinfo.c
-  ./string/../sysdeps/x86_64/multiarch/../strlen.S
-  ./string/../sysdeps/x86_64/multiarch/memchr-avx2.S
-  ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
-  ./string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
-  ./string/../sysdeps/x86_64/multiarch/strchr-avx2.S
-  ./string/../sysdeps/x86_64/multiarch/strcmp-avx2.S
-  ./string/../sysdeps/x86_64/multiarch/strlen-avx2.S
-  ./string/../sysdeps/x86_64/strcmp.S
-
---------------------------------------------------------------------------------
-Ir               
---------------------------------------------------------------------------------
-439,088 (44.55%)  events annotated
-
+not_exists
+2jND8
+4T7S1
+5j0Nq
+5jRNn
+5jVNs
+HTeD4
+HTeDT
+HcND4
+JwjsC
+PT781
+QGYMy
+QjKFy
+QjNFa
+QnYFy
+_NjsB
+_Ojse
+_ujke
+_wjsC
+eTe81
+eTeDN
+jjNC8
+jjND5
+kcNDo
+lOj9C
+lOjsC
+lOjyC
+mjNGa
+ny6bi
+oT7SW
+oY1SW
+oYtSj
+ow1SW
+pwjsC
+uG6bi
+wGYby
+wGybi
+xOx58
+xOx5j
+xOxSj
+xYtSj
+zOM58
+zOMGC
+zOMT0
+zOjGC
+zcND8
+zj6Nq
+zj6bI
+zj6pm
+zj6ps
+zy6bI
+/+|//
+4
+5j0Nq
+5jRNn
+5jVNs
+zj6Nq
+/////
+4
+5j0Nq
+5jRNn
+5jVNs
+zj6Nq
+/+|//
+4
+5j0Nq
+5jRNn
+5jVNs
+zj6Nq
+/+/+/
+1
+//+//
+1
++++//
+1
+/////
+1
+zj6Nq
+zj6Nq
+/+/+/
+1
+/////
+1
++////
+1
+zj6Nq
+/+|//
+1
++////
+1
+ko
+/////
+47
+///|/
+5
+/+///
+2
+///||
+1
+////+
+1
+/////
+1
+zOM58
+|///|
+1
++////
+1
+/+///
+1
+////+
+1
+/////
+1
+zOM58
+/+///
+1
+////+
+1
+///|/
+1
+zOM58
++///+
+1
+/////
+1
+/////
+1
+ko
+2cC6G
+2jND8
+2tCPG
+4T7S1
+5j0Nq
+5jRNn
+5jVNs
+69VbU
+86Izw
+89VbU
+89XbP
+89XgP
+8h7zw
+A9RbL
+BKCVn
+BKZVn
+BKZwm
+BKuVn
+H77Hk
+H77rR
+HTeD4
+HTeDT
+HcND4
+He7wk
+HeAlk
+HfAle
+I9Xg0
+JwjsC
+KKCzn
+OPv-z
+P9RbU
+PT781
+QGYMy
+QjKFy
+QjNFa
+QnYFy
+_KCan
+_NjsB
+_Ojse
+_SCa4
+_ujke
+_wjsC
+aPvMz
+b3xM_
+b77_w
+bPxM_
+ccC6G
+dh7zw
+eTe81
+eTeDN
+jPvM_
+jjNC8
+jjND5
+kcNDo
+lOj9C
+lOjsC
+lOjyC
+lcC68
+lcM68
+lcMuF
+mjNGa
+ny6bi
+oT7SW
+oY1SW
+oYtSj
+ow1SW
+pPR-L
+pcMuO
+pwjsC
+uG6bi
+wGYby
+wGybi
+xOx58
+xOx5j
+xOxSj
+xYtSj
+zOM58
+zOMGC
+zOMT0
+zOjGC
+zcND8
+zj6Nq
+zj6bI
+zj6pm
+zj6ps
+zy6bI
+///+/
+3
+//+//
+2
+/////
+2
+8h7zw
+dh7zw
+/////
+2
+/////
+2
+/////
+2
+/////
+2
+/////
+2
+/////
+2
+not_exists
+/////
+2
+/////
+2
+//+|/
+1
+/////
+1
+/////
+1
+/////
+1
+not_exists
+8h7zw
+/////
+1
+/////
+1
+/////
+1
+ko
+/////
+67
+/////
+44
+////|
+10
+2jND8
+QjNFa
+_NjsB
+_Ojse
+_ujke
+jPvM_
+jjNC8
+lOj9C
+lOjsC
+mjNGa
+/||//
+4
+//|//
+3
+|////
+3
+/+/|/
+3
+not_exists
+/////
+2
+/////
+2
+|////
+2
+/////
+2
++////
+1
+/////
+1
+ko
+/////
+88
+|////
+2
+/////
+2
+/////
+2
+not_exists
+HeAlk
+HfAle
+/////
+2
+/////
+2
+HeAlk
+HfAle
+|////
+2
+/////
+2
+/////
+2
+/////
+2
+HeAlk
+HfAle
+/////
+2
+ko

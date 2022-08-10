@@ -49,17 +49,6 @@ typedef struct tree_s
 	struct list_s *child;
 } tree_t;
 
-typedef struct tree2_s
-{
-	// carattere contenuto nel nodo
-	// profondità a cui si trova un nodo
-	short unsigned int caracter : 2;
-	// se valido (da stampare)
-	_Bool valid;
-	// figli del nodo (una lista dinamica)
-	struct list_s *child;
-} tree2_t;
-
 // come strutturo un nodo della lista rappresentante i figli di ogni nodo
 typedef struct list_s
 {
@@ -91,15 +80,9 @@ tree_t *addWords(tree_t *head, char *word, int length);
 
 void printDictionary(tree_t *h, char *word, int length);
 
-void cutBranch(tree_t *h);
-
-void lowerCounters(tree_t *h, int *counter);
-
-void validBranch(tree_t *h);
-
 void resetFiltered(tree_t *h);
 
-void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences);
+void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences, int *filteredCounter);
 
 void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *result, _Bool *isFree, int length);
 
@@ -307,7 +290,7 @@ list_t *findChild(list_t *h, char c)
 ////////////////////
 //	CLOSE TO I/O  //
 ////////////////////
-void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences)
+void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences, int *filteredCounter)
 {
 	list_t *listCursor;
 	int characterIndex;
@@ -349,6 +332,8 @@ void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEno
 		{
 			if ((*lettersWithEnoughOccurrences) == info->numberOfDiscoveredOccurrences)
 			{
+				// conto la filtrata
+				(*filteredCounter)++;
 			}
 			else
 			{
@@ -359,7 +344,7 @@ void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEno
 		// All the valid children
 		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
 			if (listCursor->node->valid)
-				filterDictionary(info, listCursor->node, counter, lettersWithEnoughOccurrences);
+				filterDictionary(info, listCursor->node, counter, lettersWithEnoughOccurrences, filteredCounter);
 		;
 		// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
 		// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
@@ -386,7 +371,7 @@ void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEno
 		depth = -1;
 		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
 			if (listCursor->node->valid)
-				filterDictionary(info, listCursor->node, counter, lettersWithEnoughOccurrences);
+				filterDictionary(info, listCursor->node, counter, lettersWithEnoughOccurrences, filteredCounter);
 	}
 }
 void countFiltered(tree_t *h, int *result)
@@ -647,7 +632,7 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 				// devo "buttare" la parte finale di comando ("inserisci fine")
 				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
 					;
-				filterDictionary(info, head, charactersCounter, &enoughOccurrences);
+				filterDictionary(info, head, charactersCounter, &enoughOccurrences, &filteredCounter);
 			}
 		}
 		else
@@ -682,9 +667,8 @@ void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *re
 				// paragono la parola alla soluzione, stampo il risultato del confronto e aggiorno info
 				compareWords(info, word, solution, result, isFree, length, charactersCounter);
 
-				filterDictionary(info, head, charactersCounter, &enoughOccurrences);
+				filterDictionary(info, head, charactersCounter, &enoughOccurrences, &filteredCounter);
 				// stampa numero di parole rimaste
-				countFiltered(head, &filteredCounter);
 				printf("%d\n", filteredCounter);
 			}
 			else
