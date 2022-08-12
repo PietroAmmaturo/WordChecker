@@ -20,7 +20,7 @@ typedef struct info_s
 	// pari a -1 se si è scoperto che la lettera non è presente..
 	//'A' è in posizione 0, 'B' in posizione 1, eccetera
 	char discoveredOccurrences[ALPH_LEN];
-	_Bool isDiscoveredOccurrencesUTD;
+
 	// occorrenze delle lettere nella parola
 	char trueOccurrences[ALPH_LEN];
 
@@ -29,22 +29,21 @@ typedef struct info_s
 	// dopo aver scoperto che la stessa lettera era "giusta al posto sbagliato" o "giusta al posto giusto" in una posizione precedente
 	// o se il contatore di una lettera è maggiore del numero di lettere effettive
 	_Bool isDefinitive[ALPH_LEN];
-	_Bool isIsDefinitiveUTD;
+
 	//(contenente la lista di possibili caratteri che si possono trovare in quella posizione, organizzato come un array di bool.
 	// NB: se un carattere è fissato in una posizione (giusto al posto giusto), sarà presente solo lui,
 	// se invece un carattere in quella posizione è risultato "giusto al posto sbagliato", sicuramente non sarà presente in quella posizione)
 	_Bool (*isPositionOfCharacterValid)[ALPH_LEN];
-	_Bool isIsPositionOfCharacterValidUTD;
 
 	// numero di lettere che appaiono almeno una volta
-	short unsigned int numberOfDiscoveredOccurrences;
+	int numberOfDiscoveredOccurrences;
 } info_t;
 
 // come strutturo un nodo dell'albero rappresentante il dizionario
 typedef struct tree_s
 {
 	// carattere contenuto nel nodo
-	int index : 7;
+	unsigned char character : 7;
 	// se valido (da stampare)
 	_Bool valid;
 	// puntatore al prossimo fratello
@@ -59,31 +58,29 @@ int depth;
 
 int characterToIndex(char c);
 
-tree_t *findChild(tree_t *h, int c);
+tree_t *findChild(tree_t *h, char c);
 
-_Bool findWord(tree_t *head, int *word, int length);
+_Bool findWord(tree_t *head, char *word, int length);
 
-tree_t *addNode(tree_t *h, int c);
+tree_t *addNode(tree_t *h, char c);
 
-tree_t *addChildBetween(tree_t *last, tree_t *next, int c);
+tree_t *addChildBetween(tree_t *last, tree_t *next, char c);
 
-tree_t *findOrAddChild(tree_t *h, int c, tree_t **found);
+tree_t *findOrAddChild(tree_t *h, char c, tree_t **found);
 
-tree_t *addWord(tree_t *head, int *word, int length);
+tree_t *addWord(tree_t *head, char *word, int length);
 
-tree_t *addWords(tree_t *head, int *word, int length);
+tree_t *addWords(tree_t *head, char *word, int length);
 
 void printDictionary(tree_t *h, char *word, int length);
 
 void resetFiltered(tree_t *h);
 
-void filterBranch(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences, int *filteredCounter);
-
 void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences, int *filteredCounter);
 
-void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *result, _Bool *isFree, int length);
+void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *result, _Bool *isFree, int length);
 
-void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *isFree, int length, int *counter);
+void compareWords(info_t *info, char *word, char *solution, char *result, _Bool *isFree, int length, int *counter);
 
 //////////////
 //	utils	//
@@ -116,34 +113,9 @@ int characterToIndex(char c)
 	// 37
 	return 37;
 }
-char indexToCharacter(int n)
+_Bool findWord(tree_t *head, char *word, int length)
 {
-	// 11-36
-	if (n <= 36 && n >= 11)
-	{
-		return n + 'A' - 11;
-	}
-	// 38-64
-	else if (n >= 38 && n <= 63)
-	{
-		return n + 'a' - 38;
-	}
-	// 1-10
-	else if (n <= 10 && n >= 1)
-	{
-		return n + '0' - 1;
-	}
-	// 0
-	else if (n == 0)
-	{
-		return '-';
-	}
-	// 37
-	return '_';
-}
-_Bool findWord(tree_t *head, int *word, int length)
-{
-	short unsigned int i;
+	int i;
 	tree_t *treeCursor;
 	tree_t *rightChild;
 
@@ -168,13 +140,13 @@ _Bool findWord(tree_t *head, int *word, int length)
 //////////////
 //	alberi	//
 //////////////
-tree_t *addNode(tree_t *h, int c)
+tree_t *addNode(tree_t *h, char c)
 {
 	// adding node
 	h = (tree_t *)malloc(sizeof(tree_t));
 	if (h)
 	{
-		h->index = c;
+		h->character = c;
 		h->valid = 1;
 		h->child = NULL;
 	}
@@ -184,9 +156,9 @@ tree_t *addNode(tree_t *h, int c)
 	}
 	return h;
 }
-tree_t *addWord(tree_t *head, int *word, int length)
+tree_t *addWord(tree_t *head, char *word, int length)
 {
-	short unsigned int i;
+	int i;
 	tree_t *treeCursor;
 	tree_t *rightChild;
 
@@ -202,10 +174,10 @@ tree_t *addWord(tree_t *head, int *word, int length)
 	}
 	return head;
 }
-tree_t *addWords(tree_t *head, int *word, int length)
+tree_t *addWords(tree_t *head, char *word, int length)
 {
 	// printf("\n----inizio inserimento----\n");
-	short unsigned int i, j;
+	int i, j;
 	char character;
 	// prendi primo carattere
 	do
@@ -219,7 +191,7 @@ tree_t *addWords(tree_t *head, int *word, int length)
 		// acquisisco la parola al contrario
 		for (j = 0; j < length; j++)
 		{
-			word[j] = characterToIndex(character);
+			word[j] = character;
 			character = getc(stdin);
 		}
 		// la aggiungo al dizionario
@@ -249,15 +221,15 @@ void validBranch(tree_t *h)
 
 // unica funzione che aggiunge il figlio se non c'è
 // oppure ritorna l'indirizzo del figlio se c'è
-tree_t *findOrAddChild(tree_t *h, int c, tree_t **found)
+tree_t *findOrAddChild(tree_t *h, char c, tree_t **found)
 {
 	tree_t *cursor, *previous;
 	previous = NULL;
 	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->nextSibiling)
+	for (cursor = h; cursor != NULL && cursor->character < c; cursor = cursor->nextSibiling)
 		previous = cursor;
 	// se non lo trovo lo aggiungo
-	if (cursor == NULL || cursor->index > c)
+	if (cursor == NULL || cursor->character > c)
 	{
 		cursor = addChildBetween(previous, cursor, c);
 	}
@@ -272,7 +244,7 @@ tree_t *findOrAddChild(tree_t *h, int c, tree_t **found)
 	return h;
 }
 // aggiunge elemento alla lista tra precedente e prossimo
-tree_t *addChildBetween(tree_t *last, tree_t *next, int c)
+tree_t *addChildBetween(tree_t *last, tree_t *next, char c)
 {
 	tree_t *newChild;
 
@@ -281,7 +253,7 @@ tree_t *addChildBetween(tree_t *last, tree_t *next, int c)
 	if (newChild)
 	{
 		newChild->nextSibiling = next;
-		newChild->index = c;
+		newChild->character = c;
 		newChild->valid = 1;
 		newChild->child = NULL;
 		// se c'era effettivamente un nodo prima di newChild
@@ -297,14 +269,14 @@ tree_t *addChildBetween(tree_t *last, tree_t *next, int c)
 	return newChild;
 }
 // trova e ritorna l'indirizzo del figlio se c'è, altrimenti ritorna null
-tree_t *findChild(tree_t *h, int c)
+tree_t *findChild(tree_t *h, char c)
 {
 	tree_t *cursor;
 	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->nextSibiling)
+	for (cursor = h; cursor != NULL && cursor->character < c; cursor = cursor->nextSibiling)
 		;
 	// se non lo trovo ritorno null, non serve scorrerli tutti
-	if (cursor == NULL || cursor->index > c)
+	if (cursor == NULL || cursor->character > c)
 	{
 		cursor = NULL;
 	}
@@ -317,106 +289,117 @@ tree_t *findChild(tree_t *h, int c)
 void filterDictionary(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences, int *filteredCounter)
 {
 	tree_t *listCursor;
+	int characterIndex;
 
-	int i;
-	// inizializzo il contatore di caratteri a zero
-	for (i = 0; i < ALPH_LEN; i++)
+	// controllo di non essere nell'head
+	if (h->character != EOS)
 	{
-		counter[i] = 0;
+		depth++;
+		characterIndex = characterToIndex(h->character);
+		// conto i caratteri
+		counter[characterIndex]++;
+		// se il carattere non si può trovare a quella posizione (profondità)
+		// printf("\nchecking position of: %c at: %d, result: %d\n", h->character, h->depth, info->isPositionOfCharacterValid[h->depth][characterToIndex(h->character)]);
+		if (!(info->isPositionOfCharacterValid[depth][characterIndex]))
+		{
+			// printf("\nwrong position of: %c at: %d\n", h->character, h->depth);
+			//    rendo non valido il branch dalla radice morta in giu e decremento i contatori
+			h->valid = 0;
+			counter[characterIndex]--;
+			depth--;
+			return;
+		}
+		// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
+		if (counter[characterIndex] > info->discoveredOccurrences[characterIndex] && info->isDefinitive[characterIndex])
+		{
+			// printf("\nto many of: %c\n", h->character);
+			//   rendo non valido il branch dalla radice morta in su e decremento i contatori
+			h->valid = 0;
+			counter[characterIndex]--;
+			depth--;
+			return;
+		}
+		if (counter[characterIndex] == info->discoveredOccurrences[characterIndex])
+		{
+			(*lettersWithEnoughOccurrences)++;
+		}
+		// quando raggiungo la fine della parola
+		if (h->child == NULL)
+		{
+			if ((*lettersWithEnoughOccurrences) == info->numberOfDiscoveredOccurrences)
+			{
+				// conto la filtrata
+				(*filteredCounter)++;
+			}
+			else
+			{
+				// rendo non valido il branch dalla radice morta in su e decremento i contatori
+				h->valid = 0;
+			}
+		}
+		// All the valid children
+		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+			if (listCursor->valid)
+				filterDictionary(info, listCursor, counter, lettersWithEnoughOccurrences, filteredCounter);
+		;
+		// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
+		// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
+		if (counter[characterIndex] == info->discoveredOccurrences[characterIndex])
+		{
+			(*lettersWithEnoughOccurrences)--;
+		}
+		// al ritorno decremento la lettera
+		counter[characterIndex]--;
+		depth--;
 	}
-	// inizializzo il numero di lettere che hanno abbastanza occorrenze
-	(*lettersWithEnoughOccurrences) = 0;
-	// filtro il dizionario aggiornando i validi
-	depth = -1;
-	// inizializzo il contatore delle filtrate a zero
-	(*filteredCounter) = 0;
-	for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
-		if (listCursor->valid)
-			filterBranch(info, listCursor, counter, lettersWithEnoughOccurrences, filteredCounter);
 
-	// è tutto uptodate
-	info->isDiscoveredOccurrencesUTD = 1;
-	info->isIsPositionOfCharacterValidUTD = 1;
-	info->isIsDefinitiveUTD = 1;
+	else
+	{
+		int i;
+		// inizializzo il contatore di caratteri a zero
+		for (i = 0; i < ALPH_LEN; i++)
+		{
+			counter[i] = 0;
+		}
+		// inizializzo il numero di lettere che hanno abbastanza occorrenze
+		(*lettersWithEnoughOccurrences) = 0;
+		// filtro il dizionario aggiornando i validi
+		depth = -1;
+		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+			if (listCursor->valid)
+				filterDictionary(info, listCursor, counter, lettersWithEnoughOccurrences, filteredCounter);
+	}
 }
-void filterBranch(info_t *info, tree_t *h, int *counter, int *lettersWithEnoughOccurrences, int *filteredCounter)
+void countFiltered(tree_t *h, int *result)
 {
 	tree_t *listCursor;
 
-	// conto i caratteri
-	counter[h->index]++;
-	// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
-	if (counter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
-	{
-		// rendo non valido il nodo
-		h->valid = 0;
-	}
+	if (h->child == NULL)
+		(*result)++;
 	else
-	{
-		// aumento la profondità
-		depth++;
-		// se il carattere non si può trovare a quella posizione (profondità)
-		if (!(info->isPositionOfCharacterValid[depth][h->index]))
-		{
-			// rendo non valido il nodo
-			h->valid = 0;
-		}
-		else
-		{
-			// conto le lettere con abbastanza occorrenze
-			if (counter[h->index] == info->discoveredOccurrences[h->index])
-			{
-				(*lettersWithEnoughOccurrences)++;
-			}
-			// quando raggiungo la fine della parola
-			if (h->child == NULL)
-			{
-				if ((*lettersWithEnoughOccurrences) == info->numberOfDiscoveredOccurrences)
-				{
-					// conto la filtrata
-					(*filteredCounter)++;
-				}
-				else
-				{
-					// rendo non valido il branch dalla radice morta in su e decremento i contatori
-					h->valid = 0;
-				}
-			}
-			// All the valid children
-			for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
-				if (listCursor->valid)
-					filterBranch(info, listCursor, counter, lettersWithEnoughOccurrences, filteredCounter);
-			;
-			// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
-			// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
-			if (counter[h->index] == info->discoveredOccurrences[h->index])
-			{
-				(*lettersWithEnoughOccurrences)--;
-			}
-		}
-		// al ritorno decremento la profondità
-		depth--;
-	}
-	// al ritorno decremento la lettera
-	counter[h->index]--;
+		// All the children
+		for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+			if (listCursor->valid)
+				countFiltered(listCursor, result);
 }
+
 //////////////
 //	I/O	    //
 //////////////
 void printDictionary(tree_t *h, char *word, int length)
 {
 	tree_t *listCursor;
-	if (h->index != -1)
+	if (h->character != EOS)
 	{
 		depth++;
 		// posiziona il carattere nella parola contenitore
-		word[depth] = indexToCharacter(h->index);
+		word[depth] = h->character;
 
 		// printf("%c, %d\n", h->character, h->valid);
 
 		// stampa la parola quando raggiungi la fine
 		if (h->child == NULL)
-			puts(word);
+			printf("%.*s\n", length, word);
 		else
 			// All the children
 			for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
@@ -434,12 +417,13 @@ void printDictionary(tree_t *h, char *word, int length)
 				printDictionary(listCursor, word, length);
 	}
 }
-void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *isFree, int length, int *counter)
+void compareWords(info_t *info, char *word, char *solution, char *result, _Bool *isFree, int length, int *counter)
 {
-	short unsigned int i, j, found, definitive;
+	int i, j, found, definitive, characterIndex;
 
 	for (i = 0; i < length; i++)
 	{
+		characterIndex = characterToIndex(word[i]);
 		if (word[i] == solution[i])
 		{
 			// giusta al posto giusto
@@ -449,17 +433,12 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 			// metto a zero tutti i caratteri (nessuno è valido tranne quello giusto al posto giusto)
 			for (j = 0; j < ALPH_LEN; j++)
 			{
-				// se non l'avevo precedentemente messo a zero lo azzero, ovviamente ciò non vale per quello giusto al posto giusto
-				if (info->isPositionOfCharacterValid[i][j] == 1 && j != word[i])
-				{
-					// azzero la posizione (non è valida)
-					info->isPositionOfCharacterValid[i][j] = 0;
-					// segno che sono cambiate le posizioni
-					info->isIsPositionOfCharacterValidUTD = 0;
-				}
+				info->isPositionOfCharacterValid[i][j] = 0;
 			}
+			// metto ad 1 quello giusto al posto giusto
+			info->isPositionOfCharacterValid[i][characterIndex] = 1;
 			// conto la lettera
-			counter[word[i]]++;
+			counter[characterIndex]++;
 		}
 		else
 		{
@@ -467,19 +446,13 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 			result[i] = '/';
 			// non è associata
 			isFree[i] = 1;
-			// i caratteri che non sono risultati giusti al posto giusto
-			// controllo il valore (vedo se sono già rimossi)
-			if (info->isPositionOfCharacterValid[i][word[i]] == 1)
-			{
-				// se non lo sono li rimuovo
-				info->isPositionOfCharacterValid[i][word[i]] = 0;
-				// segno che sono cambiate le posizioni
-				info->isIsPositionOfCharacterValidUTD = 0;
-			}
+			// i caratteri che non sono risultati giusti al posto giusto li rimuovo
+			info->isPositionOfCharacterValid[i][characterIndex] = 0;
 		}
 	}
 	for (i = 0; i < length; i++)
 	{
+		characterIndex = characterToIndex(word[i]);
 		definitive = 0;
 		found = 0;
 		for (j = 0; j < length && !found; j++)
@@ -496,7 +469,7 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 					// giusta al posto sbagliato
 					result[i] = '|';
 					// conto le lettere
-					counter[word[i]]++;
+					counter[characterIndex]++;
 					// segno che è già stata associata
 					isFree[j] = 0;
 					// se prima pensavo fosse definitiva ho scoperto che non lo è
@@ -511,16 +484,8 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 		}
 		if (definitive)
 		{
-			// se nin è già definitiva
-			if (info->isDefinitive[word[i]] == 0)
-			{
-				// metto il numero corretto di occorrenze
-				info->discoveredOccurrences[word[i]] = info->trueOccurrences[word[i]];
-				// segno che è definitivo
-				info->isDefinitive[word[i]] = 1;
-				// segno che sono variati i definitivi
-				info->isIsDefinitiveUTD = 0;
-			}
+			info->discoveredOccurrences[characterIndex] = info->trueOccurrences[characterIndex];
+			info->isDefinitive[characterIndex] = 1;
 		}
 		// controllo se viene trovata
 		found = 0;
@@ -538,14 +503,7 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 		{
 			for (j = 0; j < length; j++)
 			{
-				// controllo se la posizione è ancora valida
-				if (info->isPositionOfCharacterValid[j][word[i]] == 1)
-				{
-					// se lo è la rendo non valida
-					info->isPositionOfCharacterValid[j][word[i]] = 0;
-					// segno che sono variate le posizioni
-					info->isIsPositionOfCharacterValidUTD = 0;
-				}
+				info->isPositionOfCharacterValid[j][characterIndex] = 0;
 			}
 		}
 	}
@@ -560,10 +518,7 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 			// ogni volta controllo se è stata associata la lettera
 			if (counter[i] > info->discoveredOccurrences[i])
 			{
-				// aggiorno il minimo di occorrenze
 				info->discoveredOccurrences[i] = counter[i];
-				// segno che sono variate le occorrenze
-				info->isDiscoveredOccurrencesUTD = 0;
 			}
 		}
 		// aggiorno il numero di occorrenze scoperte
@@ -611,21 +566,20 @@ void compareWords(info_t *info, int *word, int *solution, char *result, _Bool *i
 	*/
 	return;
 }
-void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *result, _Bool *isFree, int length)
+void startMatch(info_t *info, tree_t *head, char *word, char *solution, char *result, _Bool *isFree, int length)
 {
-	short unsigned int i, j, attempts;
-	int enoughOccurrences;
+	int i, j, attempts, enoughOccurrences;
 	char character;
 	char command[MAX_COMMAND_LENGTH];
 	int charactersCounter[ALPH_LEN], filteredCounter;
 
 	//  prendo la soluzione
 	for (i = 0; i < length; i++)
-		solution[i] = characterToIndex(getc(stdin));
+		solution[i] = getc(stdin);
 	// prendo il null
 	character = getc(stdin);
 	// scan per sapere quanti tentativi ho a disposizione in questa partita
-	if (scanf("%hd", &attempts))
+	if (scanf("%d", &attempts))
 		;
 	//  prendi primo carattere
 	do
@@ -645,7 +599,7 @@ void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *resu
 		info->trueOccurrences[i] = 0;
 	// conto i caratteri della soluzione
 	for (i = 0; i < length; i++)
-		info->trueOccurrences[solution[i]]++;
+		info->trueOccurrences[characterToIndex(solution[i])]++;
 	// inizializzo i definitivi
 	for (i = 0; i < ALPH_LEN; i++)
 		info->isDefinitive[i] = 0;
@@ -665,7 +619,7 @@ void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *resu
 			if (strcmp(command, "stampa_filtrate\n") == 0)
 			{
 				// printf("\n---printing_dictionary---\n");
-				printDictionary(head, result, length);
+				printDictionary(head, word, length);
 			}
 			// comando per aggiungere parole al dizionario durante una partita
 			else if (strcmp(command, "inserisci_inizio\n") == 0)
@@ -682,7 +636,7 @@ void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *resu
 			// acquisisco la parola
 			for (j = 0; j < length; j++)
 			{
-				word[j] = characterToIndex(character);
+				word[j] = character;
 				character = getc(stdin);
 			}
 			// controllo se la parola è presente nel dizionario
@@ -690,14 +644,14 @@ void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *resu
 			{
 				// incremento il contatore di tentativi (valgono solo i tentativi validi)
 				i++;
-				// vedo se la parola per caso è giusta
-				for (j = 0; word[j] == solution[j]; j++)
-					if (j == length)
-					{
-						puts("ok");
-						validBranch(head);
-						return;
-					}
+				if (strncmp(word, solution, length) == 0)
+				{
+					printf("ok\n");
+					validBranch(head);
+					return;
+				}
+				// inizializzo il contatore delle filtrate a zero
+				filteredCounter = 0;
 				// inizializzo il contatore di caratteri a zero
 				for (j = 0; j < ALPH_LEN; j++)
 				{
@@ -709,19 +663,13 @@ void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *resu
 				// paragono la parola alla soluzione, stampo il risultato del confronto e aggiorno info
 				compareWords(info, word, solution, result, isFree, length, charactersCounter);
 
-				if (info->isDiscoveredOccurrencesUTD && info->isIsPositionOfCharacterValidUTD && info->isIsDefinitiveUTD)
-				{
-				}
-				else
-				{
-					filterDictionary(info, head, charactersCounter, &enoughOccurrences, &filteredCounter);
-				}
+				filterDictionary(info, head, charactersCounter, &enoughOccurrences, &filteredCounter);
 				// stampa numero di parole rimaste
 				printf("%d\n", filteredCounter);
 			}
 			else
 			{
-				puts("not_exists");
+				printf("not_exists\n");
 			}
 		}
 		// se ho tentativi rimanenti
@@ -732,7 +680,7 @@ void startMatch(info_t *info, tree_t *head, int *word, int *solution, char *resu
 	if (i >= attempts)
 	{
 		// printf("ultimo car: %c\n", character);
-		puts("ko");
+		printf("ko\n");
 		validBranch(head);
 	}
 
@@ -745,11 +693,12 @@ int main(int argc, char *argv[])
 	info_t infoVar;
 	tree_t *dictionary = NULL;
 	char character;
-	int *word, *solution;
-	char *result;
+	char *word, *solution, *result;
 	_Bool *isFree;
 	char command[MAX_COMMAND_LENGTH + 1];
 	/*
+		printf("%ld\n", sizeof(tree_t));
+		printf("%ld\n", sizeof(tree2_t));
 		printf("%ld\n", sizeof(tree_t));
 		printf("%ld\n", sizeof(_Bool));
 	*/
@@ -757,14 +706,14 @@ int main(int argc, char *argv[])
 	if (scanf("%d", &wordLength))
 		;
 	// creo dizionario vuoto
-	dictionary = addNode(dictionary, -1);
+	dictionary = addNode(dictionary, '\0');
 
 	// creo vettore di vettori statici
 	infoVar.isPositionOfCharacterValid = malloc(sizeof(_Bool) * wordLength * ALPH_LEN);
 	// creating array where to put word
-	word = (int *)malloc(7 * wordLength);
+	word = (char *)malloc(sizeof(char) * wordLength);
 	// creo vettore dove mettere la soluione
-	solution = (int *)malloc(7 * wordLength);
+	solution = (char *)malloc(sizeof(char) * wordLength);
 	// creo vettore dove mettere il risultato del confronto
 	result = (char *)malloc(sizeof(char) * wordLength);
 	// creating array where to put check for pairing
