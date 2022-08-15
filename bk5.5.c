@@ -12,7 +12,7 @@
 #define START 'A'
 
 // To force compiler to use 1 byte packaging
-#pragma pack(1)
+//#pragma pack(1)
 
 // callgrind_annotate --tree=calling callgrind.out.7096 > out
 //  tipi
@@ -68,201 +68,77 @@ typedef struct info_s
 } info_t;
 
 // come strutturo un nodo dell'albero rappresentante il dizionario
-typedef struct node_s
+typedef struct tree_s
 {
 	unsigned int killerId : 8;
 	// carattere contenuto nel nodo
 	int index : 7;
-	// puntatore al fratello
-	struct node_s *sibiling;
-	// puntatore al figlio
+	// puntatore al prossimo fratello
+	struct tree_s *nextSibiling;
+	// figli del nodo (una lista dinamica)
 	void *child;
-} node_t;
+} tree_t;
 
-// come strutturo una foglia dell'albero rappresentante il dizionario
+// come strutturo un nodo dell'albero rappresentante il dizionario
 typedef struct leaf_s
 {
 	unsigned int killerId : 8;
+
 	// carattere contenuto nel nodo
 	int index : 7;
-	// puntatore al fratello
-	struct leaf_s *sibiling;
+	// puntatore al prossimo fratello
+	struct leaf_s *nextSibiling;
 } leaf_t;
 // dichiarazioni
 
 int characterToIndex(char c);
 
-char indexToCharacter(int n);
-
-node_t *findChild(node_t *h, int c);
+tree_t *findChild(tree_t *h, int c);
 
 leaf_t *findLeaf(leaf_t *h, int c);
 
-_Bool findWord(info_t *info, node_t *head);
+_Bool findWord(info_t *info, tree_t *head);
 
-node_t *addNode(node_t *h, int c);
+tree_t *addNode(tree_t *h, int c);
 
-node_t *addNodeBetween(node_t *last, node_t *next, int c);
+tree_t *addChildBetween(tree_t *last, tree_t *next, int c);
 
-node_t *findOrAddNode(node_t *h, int c, node_t **found);
+tree_t *findOrAddChild(tree_t *h, int c, tree_t **found);
 
 leaf_t *addLeafBetween(leaf_t *last, leaf_t *next, int c);
 
 leaf_t *findOrAddLeaf(leaf_t *h, int c);
 
-node_t *addWord(info_t *info, node_t *head);
+tree_t *addWord(info_t *info, tree_t *head);
 
-node_t *addWords(info_t *info, node_t *head);
+tree_t *addWords(info_t *info, tree_t *head);
 
-void printDictionary(info_t *info, node_t *h);
+void printDictionary(info_t *info, tree_t *h);
 
-void printNode(info_t *info, node_t *h);
-
-void printLeaf(info_t *info, leaf_t *h);
+void resetFiltered(tree_t *h);
 
 void filterLeaf(info_t *info, leaf_t *h);
 
-void filterNode(info_t *info, node_t *h);
+void filterBranch(info_t *info, tree_t *h);
 
-void filterDictionary(info_t *info, node_t *h);
-
-void comments();
+void filterDictionary(info_t *info, tree_t *h);
 /*
-void filterPositions(info_t *info, node_t *h);
+void filterPositions(info_t *info, tree_t *h);
 
-void filterPositionsInBranch(info_t *info, node_t *h);
+void filterPositionsInBranch(info_t *info, tree_t *h);
 
-void filterOccurrences(info_t *info, node_t *h);
+void filterOccurrences(info_t *info, tree_t *h);
 
-void filterOccurrencesInBranch(info_t *info, node_t *h);
+void filterOccurrencesInBranch(info_t *info, tree_t *h);
 */
-void startMatch(info_t *info, node_t *head, _Bool *isFree);
+void startMatch(info_t *info, tree_t *head, _Bool *isFree);
 
 void compareWords(info_t *info, _Bool *isFree);
 
 //////////////
-//	MAYBE	//
+//	utils	//
 //////////////
-void comments()
-{
-	/*
-	void filterPositions(info_t *info, node_t *h)
-	{
-		// filtro il dizionario aggiornando i validi
-		info->depth = -1;
-		// inizializzo il contatore delle filtrate a zero
-		info->filteredCounter = 0;
 
-		filterPositionsInBranch(info, h->child);
-
-		// è tutto uptodate
-		info->isIsPositionOfCharacterValidUTD = 1;
-	}
-	void filterPositionsInBranch(info_t *info, node_t *h)
-	{
-		if (h->valid)
-		{
-			// aumento la profondità
-			info->depth++;
-			// se il carattere non si può trovare a quella posizione (profondità)
-			if (!(info->isPositionOfCharacterValid[info->depth][h->index]))
-			{
-				// rendo non valido il nodo
-				h->valid = 0;
-			}
-			// quando raggiungo la fine della parola
-			if (h->child == NULL)
-			{
-
-				// conto la filtrata
-				info->filteredCounter++;
-			}
-			// child
-			filterPositionsInBranch(info, h->child);
-			;
-
-			// al ritorno decremento la profondità
-			info->depth--;
-		}
-		// sibiling
-		if (h->sibiling)
-			filterPositionsInBranch(info, h->sibiling);
-	}
-
-	void filterOccurrences(info_t *info, node_t *h)
-	{
-		int i;
-		// inizializzo il contatore di caratteri a zero
-		for (i = 0; i < ALPH_LEN; i++)
-		{
-			info->characterCounter[i] = 0;
-		}
-		// inizializzo il numero di lettere che hanno abbastanza occorrenze
-		info->lettersWithEnoughOccurrences = 0;
-		// filtro il dizionario aggiornando i validi
-		info->depth = -1;
-		// inizializzo il contatore delle filtrate a zero
-		info->filteredCounter = 0;
-
-		filterOccurrencesInBranch(info, h->child);
-
-		// è tutto uptodate
-		info->isDiscoveredOccurrencesUTD = 1;
-	}
-	void filterOccurrencesInBranch(info_t *info, node_t *h)
-	{
-		if (h->child)
-		{
-			// conto i caratteri
-			info->characterCounter[h->index]++;
-			// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
-			if (info->characterCounter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
-			{
-				// rendo non valido il nodo
-				h->valid = 0;
-			}
-			else
-			{
-				// conto le lettere con abbastanza occorrenze
-				if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
-				{
-					info->lettersWithEnoughOccurrences++;
-				}
-				// quando raggiungo la fine della parola
-				if (h->child == NULL)
-				{
-					if (info->lettersWithEnoughOccurrences == info->numberOfDiscoveredOccurrences)
-					{
-						// conto la filtrata
-						info->filteredCounter++;
-					}
-					else
-					{
-						// rendo non valido il branch dalla radice morta in su e decremento i contatori
-						h->valid = 0;
-					}
-				}
-				// child
-				filterOccurrencesInBranch(info, h->child);
-				;
-				// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
-				// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
-				if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
-				{
-					info->lettersWithEnoughOccurrences--;
-				}
-			}
-			// al ritorno decremento la lettera
-			info->characterCounter[h->index]--;
-		}
-		// sibiling
-		if (h->sibiling)
-			filterOccurrencesInBranch(info, h->sibiling);
-	}*/
-}
-//////////////
-//	UTILS	//
-//////////////
 // - 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z _ a b c d e f g h i j k l m n o p q r s t u v w x y z
 // 0 1 2 3 4 5 6 7 8 9 101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263
 int characterToIndex(char c)
@@ -315,74 +191,78 @@ char indexToCharacter(int n)
 	// 37
 	return '_';
 }
-
-//////////////
-//	FIND	//
-//////////////
-// ritorno uno se trovo la parola, zero se non la trovo
-_Bool findWord(info_t *info, node_t *head)
+_Bool findWord(info_t *info, tree_t *head)
 {
 	short unsigned int i, bodyLength;
-	node_t *cursor;
-	node_t *rightChild;
+	tree_t *treeCursor;
+	tree_t *rightChild;
 
-	cursor = head;
+	treeCursor = head;
 
 	bodyLength = info->length - 1;
 	// scorro la parola inserita
 	for (i = 0; i < bodyLength; i++)
 	{
 		// trovo il figlio, devo pure aggiornare l'head nel caso cambi
-		rightChild = findChild(cursor->child, info->word[i]);
+		rightChild = findChild(treeCursor->child, info->word[i]);
 		// se lo trovo proseguo la scansione
 		if (rightChild)
 			// sposto il cursore nel figlio trovato
-			cursor = rightChild;
+			treeCursor = rightChild;
 		else
 			// se non lo trovo termino ritornando 0
 			return 0;
 	}
 	// trovo il figlio
-	if (findLeaf(cursor->child, info->word[i]) == NULL)
+	if (findLeaf(treeCursor->child, info->word[i]) == NULL)
 		// se non lo trovo termino ritornando 0
 		return 0;
 	return 1;
 }
-// trova e ritorna l'indirizzo del figlio se c'è, altrimenti ritorna null
-node_t *findChild(node_t *h, int c)
-{
-	node_t *cursor;
-	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->sibiling)
-		;
-	// se non lo trovo ritorno null, non serve scorrerli tutti
-	if (cursor == NULL || cursor->index > c)
-	{
-		cursor = NULL;
-	}
-	// in ogni caso ritorno cursor
-	return cursor;
-}
-leaf_t *findLeaf(leaf_t *h, int c)
-{
-	leaf_t *cursor;
-	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->sibiling)
-		;
-	// se non lo trovo ritorno null, non serve scorrerli tutti
-	if (cursor == NULL || cursor->index > c)
-	{
-		cursor = NULL;
-	}
-	// in ogni caso ritorno cursor
-	return cursor;
-}
 
 //////////////
-//	INPUT	//
+//	alberi	//
 //////////////
-node_t *addWords(info_t *info, node_t *head)
+tree_t *addNode(tree_t *h, int c)
 {
+	// adding node
+	h = (tree_t *)malloc(sizeof(tree_t));
+	if (h)
+	{
+		h->index = c;
+		h->killerId = 0;
+		h->child = NULL;
+	}
+	else
+	{
+		printf("memory error");
+	}
+	return h;
+}
+tree_t *addWord(info_t *info, tree_t *head)
+{
+	short unsigned int i, bodyLength;
+	tree_t *treeCursor;
+	tree_t *rightChild;
+
+	treeCursor = head;
+
+	bodyLength = info->length - 1;
+	// scorro la parola inserita
+	for (i = 0; i < bodyLength; i++)
+	{
+		// trovo il figlio o lo aggiungo se non c'è, devo pure aggiornare l'head nel caso cambi
+		treeCursor->child = findOrAddChild(treeCursor->child, info->word[i], &rightChild);
+		// sposto il cursore nel figlio (che sia stato appena aggiunto o meno è indifferente)
+		treeCursor = rightChild;
+	}
+	// trovo il figlio o lo aggiungo se non c'è, ma non occorre ritornarne l'indirizzo stavolta, devo pure aggiornare l'head nel caso cambi
+	treeCursor->child = findOrAddLeaf(treeCursor->child, info->word[i]);
+	return head;
+}
+tree_t *addWords(info_t *info, tree_t *head)
+{
+	// printf("\n----inizio inserimento----\n");
 	short unsigned int i, j;
 	char character;
 	// prendi primo carattere
@@ -405,63 +285,41 @@ node_t *addWords(info_t *info, node_t *head)
 		// prendi primo carattere della prossima riga
 		character = getc(stdin);
 	}
+	// printf("\n----fine inserimento----\n");
+
 	return head;
 }
-
-///////////////
-//	STORAGE  //
-///////////////
-node_t *addNode(node_t *h, int c)
+// rende valido l'elemento che gli viene passato e tutti i suoi figli
+/*
+void validBranch(tree_t *h)
 {
-	// adding node
-	h = (node_t *)malloc(sizeof(node_t));
-	if (h)
-	{
-		h->index = c;
-		h->killerId = 0;
-		h->child = NULL;
-	}
-	else
-	{
-		printf("memory error");
-	}
-	return h;
-}
-node_t *addWord(info_t *info, node_t *head)
-{
-	short unsigned int i, bodyLength;
-	node_t *cursor;
-	node_t *rightChild;
 
-	cursor = head;
+	tree_t *listCursor;
 
-	bodyLength = info->length - 1;
-	// scorro la parola inserita
-	for (i = 0; i < bodyLength; i++)
-	{
-		// trovo il figlio o lo aggiungo se non c'è, devo pure aggiornare l'head nel caso cambi
-		cursor->child = findOrAddNode(cursor->child, info->word[i], &rightChild);
-		// sposto il cursore nel figlio (che sia stato appena aggiunto o meno è indifferente)
-		cursor = rightChild;
-	}
-	// trovo il figlio o lo aggiungo se non c'è, ma non occorre ritornarne l'indirizzo stavolta, devo pure aggiornare l'head nel caso cambi
-	cursor->child = findOrAddLeaf(cursor->child, info->word[i]);
-	return head;
+	// All the children
+	for (listCursor = h->child; listCursor != NULL; listCursor = listCursor->nextSibiling)
+		validBranch(listCursor);
+
+	h->valid = 1;
 }
+*/
+//////////////
+//	liste	//
+//////////////
+
 // unica funzione che aggiunge il figlio se non c'è
-// oppure trova il figlio
-// ritorna l'indirizzo del figlio in ogni caso
-node_t *findOrAddNode(node_t *h, int c, node_t **found)
+// oppure ritorna l'indirizzo del figlio se c'è
+tree_t *findOrAddChild(tree_t *h, int c, tree_t **found)
 {
-	node_t *cursor, *previous;
+	tree_t *cursor, *previous;
 	previous = NULL;
 	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->sibiling)
+	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->nextSibiling)
 		previous = cursor;
 	// se non lo trovo lo aggiungo
 	if (cursor == NULL || cursor->index > c)
 	{
-		cursor = addNodeBetween(previous, cursor, c);
+		cursor = addChildBetween(previous, cursor, c);
 	}
 	// se il precedente è null, ho aggiunto all'inizio della lista cambiando l'head
 	if (previous == NULL)
@@ -473,38 +331,37 @@ node_t *findOrAddNode(node_t *h, int c, node_t **found)
 	*found = cursor;
 	return h;
 }
-// aggiunge elemento tra precedente e prossimo
-node_t *addNodeBetween(node_t *last, node_t *next, int c)
+// aggiunge elemento alla lista tra precedente e prossimo
+tree_t *addChildBetween(tree_t *last, tree_t *next, int c)
 {
-	node_t *newNode;
+	tree_t *newChild;
 
-	newNode = (node_t *)malloc(sizeof(node_t));
+	newChild = (tree_t *)malloc(sizeof(tree_t));
 	// adding node
-	if (newNode)
+	if (newChild)
 	{
-		newNode->sibiling = next;
-		newNode->index = c;
-		newNode->killerId = 0;
-		newNode->child = NULL;
+		newChild->nextSibiling = next;
+		newChild->index = c;
+		newChild->killerId = 0;
+		newChild->child = NULL;
 		// se c'era effettivamente un nodo prima di newChild
 		if (last)
 		{
-			last->sibiling = newNode;
+			last->nextSibiling = newChild;
 		}
 	}
 	else
 	{
 		printf("memory error");
 	}
-	return newNode;
+	return newChild;
 }
-// unica funzione che aggiunge la foglia se non c'è
 leaf_t *findOrAddLeaf(leaf_t *h, int c)
 {
 	leaf_t *cursor, *previous;
 	previous = NULL;
 	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
-	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->sibiling)
+	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->nextSibiling)
 		previous = cursor;
 	// se non lo trovo lo aggiungo
 	if (cursor == NULL || cursor->index > c)
@@ -518,7 +375,7 @@ leaf_t *findOrAddLeaf(leaf_t *h, int c)
 	}
 	return h;
 }
-// aggiunge elemento tra precedente e prossimo
+// aggiunge elemento alla lista tra precedente e prossimo
 leaf_t *addLeafBetween(leaf_t *last, leaf_t *next, int c)
 {
 	leaf_t *newChild;
@@ -527,13 +384,13 @@ leaf_t *addLeafBetween(leaf_t *last, leaf_t *next, int c)
 	// adding node
 	if (newChild)
 	{
-		newChild->sibiling = next;
+		newChild->nextSibiling = next;
 		newChild->index = c;
 		newChild->killerId = 0;
 		// se c'era effettivamente un nodo prima di newChild
 		if (last)
 		{
-			last->sibiling = newChild;
+			last->nextSibiling = newChild;
 		}
 	}
 	else
@@ -542,13 +399,218 @@ leaf_t *addLeafBetween(leaf_t *last, leaf_t *next, int c)
 	}
 	return newChild;
 }
-
-//////////////
-//	FILTER  //
-//////////////
-void filterDictionary(info_t *info, node_t *h)
+// trova e ritorna l'indirizzo del figlio se c'è, altrimenti ritorna null
+tree_t *findChild(tree_t *h, int c)
 {
-	void *cursor;
+	tree_t *cursor;
+	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
+	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->nextSibiling)
+		;
+	// se non lo trovo ritorno null, non serve scorrerli tutti
+	if (cursor == NULL || cursor->index > c)
+	{
+		cursor = NULL;
+	}
+	// in ogni caso ritorno cursor
+	return cursor;
+}
+leaf_t *findLeaf(leaf_t *h, int c)
+{
+	leaf_t *cursor;
+	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
+	for (cursor = h; cursor != NULL && cursor->index < c; cursor = cursor->nextSibiling)
+		;
+	// se non lo trovo ritorno null, non serve scorrerli tutti
+	if (cursor == NULL || cursor->index > c)
+	{
+		cursor = NULL;
+	}
+	// in ogni caso ritorno cursor
+	return cursor;
+}
+////////////////////
+//	CLOSE TO I/O  //
+////////////////////
+void filterDictionary(info_t *info, tree_t *h)
+{
+	int i;
+	// inizializzo il contatore di caratteri a zero
+	for (i = 0; i < ALPH_LEN; i++)
+	{
+		info->characterCounter[i] = 0;
+	}
+	// inizializzo il numero di lettere che hanno abbastanza occorrenze
+	info->lettersWithEnoughOccurrences = 0;
+	// filtro il dizionario aggiornando i validi
+	info->depth = -1;
+	// inizializzo il contatore delle filtrate a zero
+	info->filteredCounter = 0;
+	filterBranch(info, h->child);
+
+	// è tutto uptodate
+	info->isDiscoveredOccurrencesUTD = 1;
+	info->isIsPositionOfCharacterValidUTD = 1;
+}
+void filterBranch(info_t *info, tree_t *h)
+{
+	if (h->killerId != info->matchId)
+	{
+		// conto i caratteri
+		info->characterCounter[h->index]++;
+		// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
+		if (info->characterCounter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
+		{
+			// rendo non valido il nodo
+			h->killerId = info->matchId;
+		}
+		else
+		{
+			// aumento la profondità
+			info->depth++;
+			// se il carattere non si può trovare a quella posizione (profondità)
+			if (!(info->isPositionOfCharacterValid[info->depth][h->index]))
+			{
+				// rendo non valido il nodo
+				h->killerId = info->matchId;
+			}
+			else
+			{
+				// conto le lettere con abbastanza occorrenze
+				if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
+				{
+					info->lettersWithEnoughOccurrences++;
+				}
+				// quando raggiungo la fine della parola
+				if ((info->depth) == (info->length - 2))
+				{
+					// child
+					filterLeaf(info, h->child);
+				}
+				else
+				{
+					// child
+					filterBranch(info, h->child);
+				};
+				// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
+				// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
+				if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
+				{
+					info->lettersWithEnoughOccurrences--;
+				}
+			}
+			// al ritorno decremento la profondità
+			info->depth--;
+		}
+		// al ritorno decremento la lettera
+		info->characterCounter[h->index]--;
+	}
+	// sibiling
+	if (h->nextSibiling)
+		filterBranch(info, h->nextSibiling);
+}
+void filterLeaf(info_t *info, leaf_t *h)
+{
+	if (h->killerId != info->matchId)
+	{
+		// conto i caratteri
+		info->characterCounter[h->index]++;
+		// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
+		if (info->characterCounter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
+		{
+			// rendo non valido il nodo
+			h->killerId = info->matchId;
+		}
+		else
+		{
+			// aumento la profondità
+			info->depth++;
+			// se il carattere non si può trovare a quella posizione (profondità)
+			if (!(info->isPositionOfCharacterValid[info->depth][h->index]))
+			{
+				// rendo non valido il nodo
+				h->killerId = info->matchId;
+			}
+			else
+			{
+				// conto le lettere con abbastanza occorrenze
+				if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
+				{
+					info->lettersWithEnoughOccurrences++;
+				}
+				// quando raggiungo la fine della parola
+				if (info->lettersWithEnoughOccurrences == info->numberOfDiscoveredOccurrences)
+				{
+					// conto la filtrata
+					info->filteredCounter++;
+				}
+				else
+				{
+					// rendo non valido il branch dalla radice morta in su e decremento i contatori
+					h->killerId = info->matchId;
+				}
+				// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
+				// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
+				if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
+				{
+					info->lettersWithEnoughOccurrences--;
+				}
+			}
+			// al ritorno decremento la profondità
+			info->depth--;
+		}
+		// al ritorno decremento la lettera
+		info->characterCounter[h->index]--;
+	}
+	// sibiling
+	if (h->nextSibiling)
+		filterLeaf(info, h->nextSibiling);
+}
+/*
+void filterPositions(info_t *info, tree_t *h)
+{
+	// filtro il dizionario aggiornando i validi
+	info->depth = -1;
+	// inizializzo il contatore delle filtrate a zero
+	info->filteredCounter = 0;
+
+	filterPositionsInBranch(info, h->child);
+
+	// è tutto uptodate
+	info->isIsPositionOfCharacterValidUTD = 1;
+}
+void filterPositionsInBranch(info_t *info, tree_t *h)
+{
+	if (h->valid)
+	{
+		// aumento la profondità
+		info->depth++;
+		// se il carattere non si può trovare a quella posizione (profondità)
+		if (!(info->isPositionOfCharacterValid[info->depth][h->index]))
+		{
+			// rendo non valido il nodo
+			h->valid = 0;
+		}
+		// quando raggiungo la fine della parola
+		if (h->child == NULL)
+		{
+
+			// conto la filtrata
+			info->filteredCounter++;
+		}
+		// child
+		filterPositionsInBranch(info, h->child);
+		;
+
+		// al ritorno decremento la profondità
+		info->depth--;
+	}
+	// sibiling
+	if (h->nextSibiling)
+		filterPositionsInBranch(info, h->nextSibiling);
+}
+
+void filterOccurrences(info_t *info, tree_t *h)
+{
 	int i;
 	// inizializzo il contatore di caratteri a zero
 	for (i = 0; i < ALPH_LEN; i++)
@@ -562,34 +624,22 @@ void filterDictionary(info_t *info, node_t *h)
 	// inizializzo il contatore delle filtrate a zero
 	info->filteredCounter = 0;
 
-	for (cursor = h->child; cursor != NULL; cursor = ((node_t *)cursor)->sibiling)
-		if (((node_t *)cursor)->killerId != info->matchId)
-			filterNode(info, cursor);
+	filterOccurrencesInBranch(info, h->child);
 
 	// è tutto uptodate
 	info->isDiscoveredOccurrencesUTD = 1;
-	info->isIsPositionOfCharacterValidUTD = 1;
 }
-void filterNode(info_t *info, node_t *h)
+void filterOccurrencesInBranch(info_t *info, tree_t *h)
 {
-	void *cursor;
-	// conto i caratteri
-	info->characterCounter[h->index]++;
-	// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
-	if (info->characterCounter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
+	if (h->child)
 	{
-		// rendo non valido il nodo
-		h->killerId = info->matchId;
-	}
-	else
-	{
-		// aumento la profondità
-		info->depth++;
-		// se il carattere non si può trovare a quella posizione (profondità)
-		if (!(info->isPositionOfCharacterValid[info->depth][h->index]))
+		// conto i caratteri
+		info->characterCounter[h->index]++;
+		// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
+		if (info->characterCounter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
 		{
 			// rendo non valido il nodo
-			h->killerId = info->matchId;
+			h->valid = 0;
 		}
 		else
 		{
@@ -599,18 +649,22 @@ void filterNode(info_t *info, node_t *h)
 				info->lettersWithEnoughOccurrences++;
 			}
 			// quando raggiungo la fine della parola
-			if ((info->depth) == (info->length - 2))
+			if (h->child == NULL)
 			{
-				for (cursor = h->child; cursor != NULL; cursor = ((leaf_t *)cursor)->sibiling)
-					if (((leaf_t *)cursor)->killerId != info->matchId)
-						filterLeaf(info, ((leaf_t *)cursor));
+				if (info->lettersWithEnoughOccurrences == info->numberOfDiscoveredOccurrences)
+				{
+					// conto la filtrata
+					info->filteredCounter++;
+				}
+				else
+				{
+					// rendo non valido il branch dalla radice morta in su e decremento i contatori
+					h->valid = 0;
+				}
 			}
-			else
-			{
-				for (cursor = h->child; cursor != NULL; cursor = ((node_t *)cursor)->sibiling)
-					if (((node_t *)cursor)->killerId != info->matchId)
-						filterNode(info, ((node_t *)cursor));
-			};
+			// child
+			filterOccurrencesInBranch(info, h->child);
+			;
 			// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
 			// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
 			if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
@@ -618,111 +672,46 @@ void filterNode(info_t *info, node_t *h)
 				info->lettersWithEnoughOccurrences--;
 			}
 		}
-		// al ritorno decremento la profondità
-		info->depth--;
+		// al ritorno decremento la lettera
+		info->characterCounter[h->index]--;
 	}
-	// al ritorno decremento la lettera
-	info->characterCounter[h->index]--;
-}
-void filterLeaf(info_t *info, leaf_t *h)
+	// sibiling
+	if (h->nextSibiling)
+		filterOccurrencesInBranch(info, h->nextSibiling);
+}*/
+//////////////
+//	I/O	    //
+//////////////
+void printDictionary(info_t *info, tree_t *h)
 {
-	// conto i caratteri
-	info->characterCounter[h->index]++;
-	// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
-	if (info->characterCounter[h->index] > info->discoveredOccurrences[h->index] && info->isDefinitive[h->index])
+	if (h->index != -1)
 	{
-		// rendo non valido il nodo
-		h->killerId = info->matchId;
-	}
-	else
-	{
-		// aumento la profondità
-		info->depth++;
-		// se il carattere non si può trovare a quella posizione (profondità)
-		if (!(info->isPositionOfCharacterValid[info->depth][h->index]))
+		if (h->killerId != info->matchId)
 		{
-			// rendo non valido il nodo
-			h->killerId = info->matchId;
-		}
-		else
-		{
-			// conto le lettere con abbastanza occorrenze
-			if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
-			{
-				info->lettersWithEnoughOccurrences++;
-			}
-			// quando raggiungo la fine della parola
-			if (info->lettersWithEnoughOccurrences == info->numberOfDiscoveredOccurrences)
-			{
-				// conto la filtrata
-				info->filteredCounter++;
-			}
+			info->depth++;
+			// posiziona il carattere nella parola contenitore
+			info->result[info->depth] = indexToCharacter(h->index);
+
+			// printf("%c, %d\n", h->character, h->valid);
+
+			// stampa la parola quando raggiungi la fine
+			if (h->child == NULL)
+				puts(info->result);
 			else
-			{
-				// rendo non valido il branch dalla radice morta in su e decremento i contatori
-				h->killerId = info->matchId;
-			}
-			// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
-			// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
-			if (info->characterCounter[h->index] == info->discoveredOccurrences[h->index])
-			{
-				info->lettersWithEnoughOccurrences--;
-			}
+				// All the children
+				printDictionary(info, h->child);
+			info->depth--;
 		}
-		// al ritorno decremento la profondità
-		info->depth--;
+		if (h->nextSibiling)
+			printDictionary(info, h->nextSibiling);
 	}
-	// al ritorno decremento la lettera
-	info->characterCounter[h->index]--;
-}
-
-//////////////
-//	OUTPUT	//
-//////////////
-void printDictionary(info_t *info, node_t *h)
-{
-	void *cursor;
-
-	info->depth = -1;
-	info->word[info->length - 1] = EOS;
-	// All the children
-	// All the children
-	for (cursor = h->child; cursor != NULL; cursor = ((node_t *)cursor)->sibiling)
-		if (((node_t *)cursor)->killerId != info->matchId)
-			printNode(info, ((node_t *)cursor));
-}
-void printNode(info_t *info, node_t *h)
-{
-	void *cursor;
-
-	info->depth++;
-	// posiziona il carattere nella parola contenitore
-	info->result[info->depth] = indexToCharacter(h->index);
-	// stampa le foglie
-	if ((info->depth) == (info->length - 2))
-	{
-		for (cursor = h->child; cursor != NULL; cursor = ((leaf_t *)cursor)->sibiling)
-			if (((leaf_t *)cursor)->killerId != info->matchId)
-				printLeaf(info, ((leaf_t *)cursor));
-	}
-	// stampa il branch
 	else
 	{
+		info->depth = -1;
+		info->word[info->length - 1] = EOS;
 		// All the children
-		for (cursor = h->child; cursor != NULL; cursor = ((node_t *)cursor)->sibiling)
-			if (((node_t *)cursor)->killerId != info->matchId)
-				printNode(info, ((node_t *)cursor));
+		printDictionary(info, h->child);
 	}
-	info->depth--;
-}
-void printLeaf(info_t *info, leaf_t *h)
-{
-	info->depth++;
-	// posiziona il carattere nella parola contenitore
-	info->result[info->depth] = indexToCharacter(h->index);
-	// stampa la parola quando raggiungi la foglia
-	puts(info->result);
-	info->depth--;
 }
 void compareWords(info_t *info, _Bool *isFree)
 {
@@ -902,10 +891,7 @@ void compareWords(info_t *info, _Bool *isFree)
 	*/
 	return;
 }
-//////////////
-//	MAIN	//
-//////////////
-void startMatch(info_t *info, node_t *head, _Bool *isFree)
+void startMatch(info_t *info, tree_t *head, _Bool *isFree)
 {
 	short unsigned int i, j, attempts;
 	char character;
@@ -1043,15 +1029,15 @@ int main(int argc, char *argv[])
 {
 	short unsigned int wordLength;
 	info_t infoVar;
-	node_t *dictionary = NULL;
+	tree_t *dictionary = NULL;
 	char character;
 	_Bool *isFree;
 	char command[MAX_COMMAND_LENGTH + 1];
-	/*
-		printf("%ld\n", sizeof(info_t));
-		printf("%ld\n", sizeof(node_t));
-		printf("%ld\n", sizeof(leaf_t));
-	*/
+/*
+	printf("%ld\n", sizeof(int));
+	printf("%ld\n", sizeof(tree_t));
+	printf("%ld\n", sizeof(leaf_t));
+*/
 	// scan per sapere quanto è lunga la parola
 	if (scanf("%hd", &wordLength))
 		;
@@ -1110,3 +1096,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+// distinguere foglie dai nodi intermedi, non dargli il campo child, creare una bool isLeaf
