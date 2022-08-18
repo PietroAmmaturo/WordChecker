@@ -43,7 +43,7 @@ typedef struct info_s
 	unsigned int numberOfDiscoveredOccurrences : 4;
 
 	// profondità
-	unsigned int maxDepth : 4;
+	unsigned int depth : 4;
 
 	// lunghezza della parola
 	unsigned int length : 4;
@@ -72,54 +72,80 @@ typedef struct node_s
 {
 	unsigned int killerId : 8;
 	// carattere contenuto nel nodo
-	unsigned int index : 6;
+	int index : 7;
+	_Bool isLast : 1;
 } node_t;
 
 // come strutturo un nodo dell'albero rappresentante il dizionario
 typedef struct twig_s
 {
 	node_t node;
-	// profondità
-	int depth : 4;
-	// numero di figli
-	unsigned int maxChildIndex : 6;
-	// puntatore all'array di figli
-	void *children;
+	// puntatore al figlio
+	void *child;
 } twig_t;
 
+// come strutturo un nodo dell'albero rappresentante il dizionario
+typedef struct branched_twig_s
+{
+	twig_t twig;
+	// puntatore al fratello
+	void *sibiling;
+} branched_twig_t;
+
+// come strutturo una foglia dell'albero rappresentante il dizionario
+typedef struct leaf_s
+{
+	node_t node;
+	// puntatore al fratello
+	void *sibiling;
+} leaf_t;
+
+// come strutturo una foglia dell'albero rappresentante il dizionario
+typedef struct last_leaf_s
+{
+	node_t node;
+} last_leaf_t;
 // dichiarazioni
 
 int characterToIndex(char c);
 
 char indexToCharacter(int n);
 
-int findChild(void *h, int c);
+branched_twig_t *findChild(branched_twig_t *h, int c);
 
-int findLeaf(void *h, int c);
+leaf_t *findLeaf(leaf_t *h, int c);
 
-_Bool findWord(info_t *info, void *head);
+_Bool findWord(info_t *info, branched_twig_t *head);
 
-void *addFirstNode(void *h);
+branched_twig_t *addNode(branched_twig_t *h, int c);
 
-int findOrAddNode(void *h, int c);
+twig_t *addFirstNode(int c);
 
-void findOrAddLeaf(void *h, int c);
+branched_twig_t *addLastNode(branched_twig_t *last, void *next, int c);
 
-void addWord(info_t *info, void *head);
+branched_twig_t *addNodeBetween(branched_twig_t *last, void *next, int c);
 
-void addWords(info_t *info, void *head);
+branched_twig_t *findOrAddNode(branched_twig_t *h, int c, void **found);
 
-void printDictionary(info_t *info, void *h);
+leaf_t *addLeafBetween(leaf_t *last, leaf_t *next, int c);
+
+leaf_t *findOrAddLeaf(leaf_t *h, int c);
+
+branched_twig_t *addWord(info_t *info, branched_twig_t *head);
+
+branched_twig_t *addWords(info_t *info, branched_twig_t *head);
+
+void printDictionary(info_t *info, branched_twig_t *h);
 
 void printNode(info_t *info, void *h);
 
-void printLeaf(info_t *info, void *h);
+void printLeaf(info_t *info, leaf_t *h);
 
-void filterLeaf(info_t *info, void *h);
+void filterLeaf(info_t *info, leaf_t *h);
 
 void filterNode(info_t *info, void *h);
 
-void filterDictionary(info_t *info, void *h);
+void filterDictionary(info_t *info, branched_twig_t *h);
 
 void comments();
 /*
@@ -131,7 +157,7 @@ void filterOccurrences(info_t *info, branched_twig_t *h);
 
 void filterOccurrencesIntwig(info_t *info, branched_twig_t *h);
 */
-void startMatch(info_t *info, void *head, _Bool *isFree);
+void startMatch(info_t *info, branched_twig_t *head, _Bool *isFree);
 
 void compareWords(info_t *info, _Bool *isFree);
 
@@ -315,73 +341,69 @@ char indexToCharacter(int n)
 //	FIND	//
 //////////////
 // ritorno uno se trovo la parola, zero se non la trovo
-_Bool findWord(info_t *info, void *head)
+_Bool findWord(info_t *info, branched_twig_t *head)
 {
-	short int i, bodyLength, foundIndex;
-	void *cursor;
+	short unsigned int i, bodyLength;
+	branched_twig_t *cursor;
+	branched_twig_t *rightChild;
 
-	foundIndex = 0;
 	cursor = head;
-	bodyLength = info->length - 1;
-	// scorro la parola inserita finchè trovo i figli
-	for (i = 0; i < bodyLength && foundIndex != -1; i++)
-	{
-		// trovo il figlio e ritorno l'indice, ritorno -1 se non lo trovo
-		foundIndex = findChild(cursor, info->word[i]);
-		// sposto il cursore nel figlio trovato
-		// il figlio ha per indirizzo l'indirizzo dell'array di figli sommato all' indice trovato
-		cursor = ((twig_t *)(((twig_t *)cursor)->children) + foundIndex);
-	}
-	if (foundIndex != -1)
-	{
-		// trovo il figlio e ritorno l'indice, ritorno -1 se non lo trovo
-		foundIndex = findLeaf(cursor, info->word[i]);
-	}
 
-	if (foundIndex != -1)
-		return 1;
-	return 0;
+	bodyLength = info->length - 1;
+	// scorro la parola inserita
+	for (i = 0; i < bodyLength; i++)
+	{
+		// trovo il figlio, devo pure aggiornare l'head nel caso cambi
+		rightChild = findChild(((twig_t *)cursor)->child, info->word[i]);
+		// se lo trovo proseguo la scansione
+		if (rightChild)
+			// sposto il cursore nel figlio trovato
+			cursor = rightChild;
+		else
+			// se non lo trovo termino ritornando 0
+			return 0;
+	}
+	// trovo il figlio
+	if (findLeaf(((twig_t *)cursor)->child, info->word[i]) == NULL)
+		// se non lo trovo termino ritornando 0
+		return 0;
+	return 1;
 }
 // trova e ritorna l'indirizzo del figlio se c'è, altrimenti ritorna null
-int findChild(void *h, int c)
+branched_twig_t *findChild(branched_twig_t *h, int c)
 {
-	short int i;
-	// scorro fino alla fine o finchè non raggiungo un figlio maggiore
-	for (i = 0;
-		 (i <= ((twig_t *)h)->maxChildIndex) &&
-		 (((twig_t *)((twig_t *)h)->children)[i]).node.index < c;
-		 i++)
+	void *cursor;
+	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
+	// oppure se arrivo all'ultimo figlio
+	for (cursor = h; !(((node_t *)cursor)->isLast) && ((node_t *)cursor)->index < c; cursor = ((branched_twig_t *)cursor)->sibiling)
 		;
-	// se l'ho trovato
-	if (i <= ((twig_t *)h)->maxChildIndex &&
-		(((twig_t *)((twig_t *)h)->children)[i]).node.index == c)
+	// se non lo trovo ritorno null, non serve scorrerli tutti
+	if (((((node_t *)cursor)->isLast) && ((node_t *)cursor)->index > c) || ((node_t *)cursor)->index > c)
 	{
-		return i;
+		cursor = NULL;
 	}
-	return -1;
+	// in ogni caso ritorno cursor
+	return cursor;
 }
-int findLeaf(void *h, int c)
+leaf_t *findLeaf(leaf_t *h, int c)
 {
-	short int i;
-	// scorro fino alla fine o finchè non raggiungo un figlio maggiore
-	for (i = 0;
-		 (i <= ((twig_t *)h)->maxChildIndex) &&
-		 (((node_t *)((twig_t *)h)->children)[i]).index < c;
-		 i++)
+	leaf_t *cursor;
+	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
+	for (cursor = h; cursor != NULL && ((node_t *)cursor)->index < c; cursor = cursor->sibiling)
 		;
-	// se l'ho trovato
-	if (i <= ((twig_t *)h)->maxChildIndex &&
-		(((node_t *)((twig_t *)h)->children)[i]).index == c)
+	// se non lo trovo ritorno null, non serve scorrerli tutti
+	if (cursor == NULL || ((node_t *)cursor)->index > c)
 	{
-		return i;
+		cursor = NULL;
 	}
-	return -1;
+	// in ogni caso ritorno cursor
+	return cursor;
 }
 
 //////////////
 //	INPUT	//
 //////////////
-void addWords(info_t *info, void *head)
+branched_twig_t *addWords(info_t *info, branched_twig_t *head)
 {
 	short unsigned int i, j;
 	char character;
@@ -405,26 +427,22 @@ void addWords(info_t *info, void *head)
 		// prendi primo carattere della prossima riga
 		character = getc(stdin);
 	}
+	return head;
 }
 
 ///////////////
 //	STORAGE  //
 ///////////////
-void *addFirstNode(void *h)
+branched_twig_t *addNode(branched_twig_t *h, int c)
 {
 	// adding node
-	h = (twig_t *)malloc(sizeof(twig_t));
+	h = (branched_twig_t *)malloc(18);
 	if (h)
 	{
-		// indice inutile
-		((node_t *)h)->index = 0;
-		// killerId inutile
+		((node_t *)h)->index = c;
 		((node_t *)h)->killerId = 0;
-		// profondità utile per i calcoli
-		((twig_t *)h)->depth = -1;
-		// ricordarsi che non è 0 ma null
-		((twig_t *)h)->maxChildIndex = 0;
-		((twig_t *)h)->children = NULL;
+		((node_t *)h)->isLast = 1;
+		((twig_t *)h)->child = NULL;
 	}
 	else
 	{
@@ -432,126 +450,196 @@ void *addFirstNode(void *h)
 	}
 	return h;
 }
-void addWord(info_t *info, void *head)
+branched_twig_t *addWord(info_t *info, branched_twig_t *head)
 {
-	short unsigned int i, bodyLength, foundIndex;
+	short unsigned int i, bodyLength;
 	void *cursor;
+	void *rightChild;
 
-	foundIndex = 0;
 	cursor = head;
+
 	bodyLength = info->length - 1;
 	// scorro la parola inserita
 	for (i = 0; i < bodyLength; i++)
 	{
 		// trovo il figlio o lo aggiungo se non c'è, devo pure aggiornare l'head nel caso cambi
-		foundIndex = findOrAddNode(cursor, info->word[i]);
+		((twig_t *)cursor)->child = findOrAddNode(((twig_t *)cursor)->child, info->word[i], &rightChild);
 		// sposto il cursore nel figlio (che sia stato appena aggiunto o meno è indifferente)
-		// il figlio ha per indirizzo l'indirizzo dell'array di figli sommato all' indice trovato
-		cursor = ((twig_t *)(((twig_t *)cursor)->children) + foundIndex);
+		cursor = rightChild;
 	}
 	// trovo il figlio o lo aggiungo se non c'è, ma non occorre ritornarne l'indirizzo stavolta, devo pure aggiornare l'head nel caso cambi
-	findOrAddLeaf(cursor, info->word[i]);
+	((twig_t *)cursor)->child = findOrAddLeaf(((twig_t *)cursor)->child, info->word[i]);
+	return head;
 }
-// unica funzione che aggiunge il figlio se non c'è oppure lo trova
-// ritorna l'indice del figlio in ambo i casi
-int findOrAddNode(void *h, int c)
+// unica funzione che aggiunge il figlio se non c'è
+// oppure trova il figlio
+// ritorna l'indirizzo del figlio in ogni caso
+branched_twig_t *findOrAddNode(branched_twig_t *h, int c, void **found)
 {
-	int i, j;
-	i = 0;
-	// se ha figli lo cerco
-	if (((twig_t *)h)->children != NULL)
-		// scorro fino alla fine o finchè non raggiungo un figlio maggiore
-		while ((i <= ((twig_t *)h)->maxChildIndex) &&
-			   ((twig_t *)((twig_t *)h)->children)[i].node.index < c)
-		{
-			i++;
-		}
-	// se non l'ho trovato
-	if (
-		// se non aveva figli
-		((twig_t *)h)->children == NULL ||
-		// se ho raggiunto la lunghezza
-		i > ((twig_t *)h)->maxChildIndex ||
-		// se non mi sono fermato sul carattere
-		(((twig_t *)((twig_t *)h)->children)[i]).node.index != c)
+	void *cursor, *previous;
+	previous = NULL;
+	if (h == NULL)
 	{
-		// se è il primo figlio che aggiungo
-		if (((twig_t *)h)->children == NULL)
-			// setto a zero il max child index
-			((twig_t *)h)->maxChildIndex = 0;
-		else
-			// aumento il max child index
-			((twig_t *)h)->maxChildIndex++;
-		// faccio spazio
-		((twig_t *)h)->children = realloc(((twig_t *)h)->children, sizeof(twig_t) * (((twig_t *)h)->maxChildIndex + 1));
-		// shifto a destra gli elementi partendo dalla posizione i
-		for (j = ((twig_t *)h)->maxChildIndex; j > i; j--)
-		{
-			((twig_t *)((twig_t *)h)->children)[j].node.index = ((twig_t *)((twig_t *)h)->children)[j - 1].node.index;
-			((twig_t *)((twig_t *)h)->children)[j].node.killerId = ((twig_t *)((twig_t *)h)->children)[j - 1].node.killerId;
-			((twig_t *)((twig_t *)h)->children)[j].depth = ((twig_t *)((twig_t *)h)->children)[j - 1].depth;
-			((twig_t *)((twig_t *)h)->children)[j].maxChildIndex = ((twig_t *)((twig_t *)h)->children)[j - 1].maxChildIndex;
-			((twig_t *)((twig_t *)h)->children)[j].children = ((twig_t *)((twig_t *)h)->children)[j - 1].children;
-		}
-		// memmove(((twig_t *)((twig_t *)h)->children) + i + 1, ((twig_t *)((twig_t *)h)->children) + i, sizeof(twig_t) * (((twig_t *)h)->maxChildIndex - i));
-		//  assegno i valori al figlio appena aggiunto
-		((twig_t *)((twig_t *)h)->children)[i].node.index = c;
-		((twig_t *)((twig_t *)h)->children)[i].node.killerId = 0;
-		((twig_t *)((twig_t *)h)->children)[i].depth = ((twig_t *)h)->depth + 1;
-		((twig_t *)((twig_t *)h)->children)[i].maxChildIndex = 0;
-		((twig_t *)((twig_t *)h)->children)[i].children = NULL;
+		cursor = addFirstNode(c);
+		h = cursor;
 	}
-	return i;
+	else
+	{
+		// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
+		// oppure arrivo alla fine quando non ci sono più fratelli
+		for (cursor = h; !(((node_t *)cursor)->isLast) && ((node_t *)cursor)->index < c; cursor = ((branched_twig_t *)cursor)->sibiling)
+			previous = cursor;
+		// se non lo trovo lo aggiungo
+		if (((node_t *)cursor)->index > c)
+		{
+			cursor = addNodeBetween(previous, cursor, c);
+			// se il precedente è null, ho aggiunto all'inizio della lista cambiando l'head
+			if (previous == NULL)
+				h = cursor;
+		}
+		else if (((node_t *)cursor)->index < c && ((node_t *)cursor)->isLast)
+		{
+			// ritorna l'indirizzo del penultimo, attenzione!
+			cursor = addLastNode(previous, cursor, c);
+			// se il precedente è null, ho aggiunto all'inizio della lista cambiando l'head
+			if (previous == NULL)
+				h = cursor;
+			cursor = ((branched_twig_t *)cursor)->sibiling;
+		}
+	}
+	// in ogni caso ritorno cursor, se non l' ho aggiunto significa che:
+	// cursor->node->index == c
+	*found = cursor;
+	return h;
 }
-// funzione che aggiunge la foglia se non c'è
-void findOrAddLeaf(void *h, int c)
+// aggiunge ultimo elemento con scambio
+branched_twig_t *addLastNode(branched_twig_t *last, void *next, int c)
 {
-	int i, j;
-	i = 0;
-	// se ha figli lo cerco
-	if (((twig_t *)h)->children != NULL)
-		// scorro fino alla fine o finchè non raggiungo un figlio maggiore
-		while ((i <= ((twig_t *)h)->maxChildIndex) &&
-			   ((((node_t *)((twig_t *)h)->children)[i]).index < c))
-		{
-			i++;
-		}
-	// se non l'ho trovato
-	if (
-		// se non aveva figli
-		((twig_t *)h)->children == NULL ||
-		// se ho raggiunto la lunghezza
-		i > ((twig_t *)h)->maxChildIndex ||
-		// se non mi sono fermato sul carattere
-		(((node_t *)((twig_t *)h)->children)[i]).index != c)
+	branched_twig_t *newNode;
+
+	newNode = (branched_twig_t *)malloc(18);
+	// adding node
+	if (newNode)
 	{
-		// se è il primo figlio che aggiungo
-		if (((twig_t *)h)->children == NULL)
-			// setto a zero il max child index
-			((twig_t *)h)->maxChildIndex = 0;
-		else
-			// aumento il max child index
-			((twig_t *)h)->maxChildIndex++;
-		// faccio spazio
-		((twig_t *)h)->children = realloc(((twig_t *)h)->children, sizeof(node_t) * (((twig_t *)h)->maxChildIndex + 1));
-		// shifto a destra gli elementi partendo dalla posizione i
-		for (j = ((twig_t *)h)->maxChildIndex; j > i; j--)
+		// creo un nodo normale come penultimo
+		if (last)
 		{
-			((node_t *)((twig_t *)h)->children)[j].index = ((node_t *)((twig_t *)h)->children)[j - 1].index;
-			((node_t *)((twig_t *)h)->children)[j].killerId = ((node_t *)((twig_t *)h)->children)[j - 1].killerId;
+			last->sibiling = newNode;
 		}
-		// memmove(((node_t *)((twig_t *)h)->children) + i + 1, ((node_t *)((twig_t *)h)->children) + i, sizeof(node_t) * (((twig_t *)h)->maxChildIndex - i));
-		//  assegno i valori al figlio appena aggiunto
-		((node_t *)((twig_t *)h)->children)[i].index = c;
-		((node_t *)((twig_t *)h)->children)[i].killerId = 0;
+		newNode->sibiling = next;
+		// inserisco i valori del vecchio ultimo nodo nel penultimo appena creato
+		((node_t *)newNode)->index = ((node_t *)next)->index;
+		((node_t *)newNode)->killerId = ((node_t *)next)->killerId;
+		((node_t *)newNode)->isLast = 0;
+		((twig_t *)newNode)->child = ((twig_t *)next)->child;
+		// inserisco ora i valori del nuovo ultimo nodo
+		((node_t *)next)->index = c;
+		((node_t *)next)->killerId = 0;
+		((twig_t *)next)->child = NULL;
 	}
+	else
+	{
+		printf("memory error");
+	}
+	return newNode;
+}
+// aggiunge primo elemento
+twig_t *addFirstNode(int c)
+{
+	twig_t *newNode;
+
+	newNode = (twig_t *)malloc(10);
+	// adding node
+	if (newNode)
+	{
+		((node_t *)newNode)->index = c;
+		((node_t *)newNode)->killerId = 0;
+		((node_t *)newNode)->isLast = 1;
+		newNode->child = NULL;
+	}
+	else
+	{
+		printf("memory error");
+	}
+	return newNode;
+}
+// aggiunge elemento tra precedente e prossimo
+branched_twig_t *addNodeBetween(branched_twig_t *last, void *next, int c)
+{
+	branched_twig_t *newNode;
+
+	newNode = (branched_twig_t *)malloc(18);
+	// adding node
+	if (newNode)
+	{
+		newNode->sibiling = next;
+		((node_t *)newNode)->index = c;
+		((node_t *)newNode)->killerId = 0;
+		((node_t *)newNode)->isLast = 0;
+		((twig_t *)newNode)->child = NULL;
+		// se c'era effettivamente un nodo prima di newChild
+		if (last)
+		{
+			last->sibiling = newNode;
+		}
+	}
+	else
+	{
+		printf("memory error");
+	}
+	return newNode;
+}
+// unica funzione che aggiunge la foglia se non c'è
+leaf_t *findOrAddLeaf(leaf_t *h, int c)
+{
+	leaf_t *cursor, *previous;
+	previous = NULL;
+	// sposto il cursore fino a trovare il figlio che punta a un nodo il cui carattere è maggiore o uguale di quello desiderato
+	for (cursor = h; cursor != NULL && ((node_t *)cursor)->index < c; cursor = cursor->sibiling)
+		previous = cursor;
+	// se non lo trovo lo aggiungo
+	if (cursor == NULL || ((node_t *)cursor)->index > c)
+	{
+		cursor = addLeafBetween(previous, cursor, c);
+	}
+	// se il precedente è null, ho aggiunto all'inizio della lista cambiando l'head
+	if (previous == NULL)
+	{
+		h = cursor;
+	}
+	return h;
+}
+// aggiunge elemento tra precedente e prossimo
+leaf_t *addLeafBetween(leaf_t *last, leaf_t *next, int c)
+{
+	leaf_t *newChild;
+
+	newChild = (leaf_t *)malloc(10);
+	// adding node
+	if (newChild)
+	{
+		newChild->sibiling = next;
+		((node_t *)newChild)->index = c;
+		((node_t *)newChild)->killerId = 0;
+		// se c'era effettivamente un nodo prima di newChild
+		if (last)
+		{
+			last->sibiling = newChild;
+		}
+	}
+	else
+	{
+		printf("memory error");
+	}
+	return newChild;
 }
 
 //////////////
 //	FILTER  //
 //////////////
-void filterDictionary(info_t *info, void *h)
+void filterDictionary(info_t *info, branched_twig_t *h)
 {
+	void *cursor;
 	int i;
 	// inizializzo il contatore di caratteri a zero
 	for (i = 0; i < ALPH_LEN; i++)
@@ -560,37 +648,23 @@ void filterDictionary(info_t *info, void *h)
 	}
 	// inizializzo il numero di lettere che hanno abbastanza occorrenze
 	info->lettersWithEnoughOccurrences = 0;
+	// filtro il dizionario aggiornando i validi
+	info->depth = -1;
 	// inizializzo il contatore delle filtrate a zero
 	info->filteredCounter = 0;
-	// se i figli sono rami
-	if ((((twig_t *)h)->depth + 1) < info->maxDepth)
-	{
-		for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-		{
-			if (((node_t *)(((twig_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-			{
-				filterNode(info, ((twig_t *)((twig_t *)h)->children) + i);
-			}
-		}
-	}
-	// se i figli sono foglie
-	else
-	{
-		for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-		{
-			if (((node_t *)(((twig_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-			{
-				filterLeaf(info, ((node_t *)((twig_t *)h)->children) + i);
-			}
-		}
-	}
+
+	for (cursor = ((twig_t *)h)->child; !(((node_t *)cursor)->isLast); cursor = ((branched_twig_t *)cursor)->sibiling)
+		if (((node_t *)cursor)->killerId != info->matchId)
+			filterNode(info, ((branched_twig_t *)cursor));
+	filterNode(info, ((twig_t *)cursor));
+
 	// è tutto uptodate
 	info->isDiscoveredOccurrencesUTD = 1;
 	info->isIsPositionOfCharacterValidUTD = 1;
 }
 void filterNode(info_t *info, void *h)
 {
-	short unsigned int i;
+	void *cursor;
 	// conto i caratteri
 	info->characterCounter[((node_t *)h)->index]++;
 	// se il numero di una lettera supera il numero effettivo di occorrenze (e si è certi del numero)
@@ -601,8 +675,10 @@ void filterNode(info_t *info, void *h)
 	}
 	else
 	{
+		// aumento la profondità
+		info->depth++;
 		// se il carattere non si può trovare a quella posizione (profondità)
-		if (!(info->isPositionOfCharacterValid[((twig_t *)h)->depth][((node_t *)h)->index]))
+		if (!(info->isPositionOfCharacterValid[info->depth][((node_t *)h)->index]))
 		{
 			// rendo non valido il nodo
 			((node_t *)h)->killerId = info->matchId;
@@ -614,28 +690,20 @@ void filterNode(info_t *info, void *h)
 			{
 				info->lettersWithEnoughOccurrences++;
 			}
-			// se i figli sono rami
-			if ((((twig_t *)h)->depth + 1) < info->maxDepth)
+			// quando raggiungo la fine della parola
+			if ((info->depth) == (info->length - 2))
 			{
-				for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-				{
-					if (((node_t *)(((twig_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-					{
-						filterNode(info, ((twig_t *)((twig_t *)h)->children) + i);
-					}
-				}
+				for (cursor = ((twig_t *)h)->child; cursor != NULL; cursor = ((leaf_t *)cursor)->sibiling)
+					if (((node_t *)cursor)->killerId != info->matchId)
+						filterLeaf(info, ((leaf_t *)cursor));
 			}
-			// se i figli sono foglie
 			else
 			{
-				for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-				{
-					if (((node_t *)(((node_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-					{
-						filterLeaf(info, ((node_t *)((twig_t *)h)->children) + i);
-					}
-				}
-			}
+				for (cursor = ((twig_t *)h)->child; !(((node_t *)cursor)->isLast); cursor = ((branched_twig_t *)cursor)->sibiling)
+					if (((node_t *)cursor)->killerId != info->matchId)
+						filterNode(info, ((branched_twig_t *)cursor));
+				filterNode(info, ((twig_t *)cursor));
+			};
 			// se il contatore della lettera, che mi garantiva che ci fossero abbastanza
 			// occorrenze della lettera stessa, va sotto la soglia, non ci sono più abbastanza occorrenze
 			if (info->characterCounter[((node_t *)h)->index] == info->discoveredOccurrences[((node_t *)h)->index])
@@ -643,11 +711,13 @@ void filterNode(info_t *info, void *h)
 				info->lettersWithEnoughOccurrences--;
 			}
 		}
+		// al ritorno decremento la profondità
+		info->depth--;
 	}
 	// al ritorno decremento la lettera
 	info->characterCounter[((node_t *)h)->index]--;
 }
-void filterLeaf(info_t *info, void *h)
+void filterLeaf(info_t *info, leaf_t *h)
 {
 	// conto i caratteri
 	info->characterCounter[((node_t *)h)->index]++;
@@ -659,8 +729,10 @@ void filterLeaf(info_t *info, void *h)
 	}
 	else
 	{
+		// aumento la profondità
+		info->depth++;
 		// se il carattere non si può trovare a quella posizione (profondità)
-		if (!(info->isPositionOfCharacterValid[info->maxDepth][((node_t *)h)->index]))
+		if (!(info->isPositionOfCharacterValid[info->depth][((node_t *)h)->index]))
 		{
 			// rendo non valido il nodo
 			((node_t *)h)->killerId = info->matchId;
@@ -690,6 +762,8 @@ void filterLeaf(info_t *info, void *h)
 				info->lettersWithEnoughOccurrences--;
 			}
 		}
+		// al ritorno decremento la profondità
+		info->depth--;
 	}
 	// al ritorno decremento la lettera
 	info->characterCounter[((node_t *)h)->index]--;
@@ -698,71 +772,54 @@ void filterLeaf(info_t *info, void *h)
 //////////////
 //	OUTPUT	//
 //////////////
-void printDictionary(info_t *info, void *h)
+void printDictionary(info_t *info, branched_twig_t *h)
 {
-	short unsigned int i;
+	void *cursor;
 
+	info->depth = -1;
 	info->word[info->length - 1] = EOS;
 
-	// se i figli sono rami
-	if ((((twig_t *)h)->depth + 1) < info->maxDepth)
-	{
-		for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-		{
-			if (((node_t *)(((twig_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-			{
-				printNode(info, ((twig_t *)((twig_t *)h)->children) + i);
-			}
-		}
-	}
-	// se i figli sono foglie
-	else
-	{
-		for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-		{
-			if (((node_t *)(((twig_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-			{
-				printLeaf(info, ((node_t *)((twig_t *)h)->children) + i);
-			}
-		}
-	}
+	// All the children
+	for (cursor = ((twig_t *)h)->child; !(((node_t *)cursor)->isLast); cursor = ((branched_twig_t *)cursor)->sibiling)
+		if (((node_t *)cursor)->killerId != info->matchId)
+			printNode(info, ((branched_twig_t *)cursor));
+	if (((node_t *)cursor)->killerId != info->matchId)
+		printNode(info, ((twig_t *)cursor));
 }
 void printNode(info_t *info, void *h)
 {
-	short unsigned int i;
+	void *cursor;
 
+	info->depth++;
 	// posiziona il carattere nella parola contenitore
-	info->result[((twig_t *)h)->depth] = indexToCharacter(((node_t *)h)->index);
+	info->result[info->depth] = indexToCharacter(((node_t *)h)->index);
 	// stampa le foglie
-	// se i figli sono rami
-	if ((((twig_t *)h)->depth + 1) < info->maxDepth)
+	if ((info->depth) == (info->length - 2))
 	{
-		for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-		{
-			if (((node_t *)(((twig_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-			{
-				printNode(info, ((twig_t *)((twig_t *)h)->children) + i);
-			}
-		}
+		for (cursor = ((twig_t *)h)->child; cursor != NULL; cursor = ((leaf_t *)cursor)->sibiling)
+			if (((node_t *)cursor)->killerId != info->matchId)
+				printLeaf(info, ((leaf_t *)cursor));
 	}
-	// se i figli sono foglie
+	// stampa il twig
 	else
 	{
-		for (i = 0; i <= ((twig_t *)h)->maxChildIndex; i++)
-		{
-			if (((node_t *)(((node_t *)((twig_t *)h)->children) + i))->killerId != info->matchId)
-			{
-				printLeaf(info, ((node_t *)((twig_t *)h)->children) + i);
-			}
-		}
+		// All the children
+		for (cursor = ((twig_t *)h)->child; !(((node_t *)cursor)->isLast); cursor = ((branched_twig_t *)cursor)->sibiling)
+			if (((node_t *)cursor)->killerId != info->matchId)
+				printNode(info, ((branched_twig_t *)cursor));
+		if (((node_t *)cursor)->killerId != info->matchId)
+			printNode(info, ((twig_t *)cursor));
 	}
+	info->depth--;
 }
-void printLeaf(info_t *info, void *h)
+void printLeaf(info_t *info, leaf_t *h)
 {
+	info->depth++;
 	// posiziona il carattere nella parola contenitore
-	info->result[info->maxDepth] = indexToCharacter(((node_t *)h)->index);
+	info->result[info->depth] = indexToCharacter(((node_t *)h)->index);
 	// stampa la parola quando raggiungi la foglia
 	printf("%.*s\n", info->length, info->result);
+	info->depth--;
 }
 void compareWords(info_t *info, _Bool *isFree)
 {
@@ -942,11 +999,10 @@ void compareWords(info_t *info, _Bool *isFree)
 	*/
 	return;
 }
-
 //////////////
 //	MAIN	//
 //////////////
-void startMatch(info_t *info, void *head, _Bool *isFree)
+void startMatch(info_t *info, branched_twig_t *head, _Bool *isFree)
 {
 	short unsigned int i, j, attempts;
 	char character;
@@ -1005,7 +1061,7 @@ void startMatch(info_t *info, void *head, _Bool *isFree)
 			// comando per aggiungere parole al dizionario durante una partita
 			else if (strcmp(command, "inserisci_inizio\n") == 0)
 			{
-				addWords(info, head);
+				head = addWords(info, head);
 				// devo "buttare" la parte finale di comando ("inserisci fine")
 				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
 					;
@@ -1085,7 +1141,7 @@ int main(int argc, char *argv[])
 {
 	short unsigned int wordLength;
 	info_t infoVar;
-	twig_t *dictionary = NULL;
+	branched_twig_t *dictionary = NULL;
 	char character;
 	_Bool *isFree;
 	char command[MAX_COMMAND_LENGTH + 1];
@@ -1098,12 +1154,11 @@ int main(int argc, char *argv[])
 	// scan per sapere quanto è lunga la parola
 	if (scanf("%hd", &wordLength))
 		;
-
 	infoVar.length = wordLength;
-	infoVar.maxDepth = wordLength - 1;
+
 	infoVar.matchId = 0;
 	// creo dizionario vuoto
-	dictionary = addFirstNode(dictionary);
+	dictionary = addNode(dictionary, -1);
 
 	// creo vettore di vettori statici
 	infoVar.isPositionOfCharacterValid = malloc(sizeof(_Bool) * wordLength * ALPH_LEN);
@@ -1119,7 +1174,7 @@ int main(int argc, char *argv[])
 	if (infoVar.word && infoVar.solution && infoVar.result && isFree && infoVar.isPositionOfCharacterValid)
 	{
 		// aggiungo per la prima volta parole al dizionario
-		addWords(&infoVar, dictionary);
+		dictionary = addWords(&infoVar, dictionary);
 
 		// sicuramente ho terminato con un comando
 		// il carattere '+' con cui inizia il comando nuova_partita è stato mangiato da addWords che lo ha "scambiato" per il '+' di inserisci_fine
@@ -1138,7 +1193,7 @@ int main(int argc, char *argv[])
 			// comando per aggiungere parole al dizionario tra una partita e l'altra
 			else if (strcmp(command, "inserisci_inizio\n") == 0)
 			{
-				addWords(&infoVar, dictionary);
+				dictionary = addWords(&infoVar, dictionary);
 				// devo "buttare" la parte finale di comando ("inserisci fine")
 				if (fgets(command, MAX_COMMAND_LENGTH, stdin))
 					;
